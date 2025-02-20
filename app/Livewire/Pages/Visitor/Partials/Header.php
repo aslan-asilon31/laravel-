@@ -57,7 +57,7 @@ class Header extends Component
         $this->tes1 = ['tes1-1','tes-2','tes-3'];
 
         $cart = new Cart();
-        $this->cartItems = $cart->loadCartItems();
+        $this->products = session('products', []);
         // $this->addToCart = $cart->addToCart();
         // $this->isProductInCart = $cart->isProductInCart();
         // $this->updateCartItem = $cart->updateCartItem();

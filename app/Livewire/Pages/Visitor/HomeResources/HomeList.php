@@ -24,15 +24,23 @@ class HomeList extends Component
 
     public string $title = 'Home';  
     public string $url = '/home';
-    public $product_category_firsts;   
+    public $product_category_firsts; 
+    public $categories; 
+    public $marketplaces;   
+
+
     public $product_category_second;   
-    public $product_brands = [];   
+    public $product_brands = []; 
+
     public $product_brand_lists;   
-    public $product_contents  = [];   
+    public $product_contents  = []; 
+    public $productrecoms  = [];   
+
     public $product_content = [];   
-    public $marketplaces; 
     public $product_lists;   
-    public $product; 
+    public $product;
+    public $products5; 
+
     public $product_detail = [];
 
     public $brands = [];  
@@ -63,7 +71,8 @@ class HomeList extends Component
     public function mount() 
     {  
         $cart = new Cart();
-        $this->cartItems = $cart->loadCartItems();
+        $this->cartItems = session('products', []);
+
 
         // $this->cartItems = cartItem;
         // dd($this->cartItems);
@@ -83,11 +92,12 @@ class HomeList extends Component
         //   'product_category_firsts.is_activated',
         // ])->get();
 
-        $this->product_category_firsts =  ProductCategoryFirst::all();
+        $this->categories =  ProductCategoryFirst::all();
         // ])->where('product_brands.id','9d8c8235-70a3-4269-b59e-62a371e9456')->get();
+        $this->marketplace =  Marketplace::all();
 
 
-        $this->product_contents =  ProductContent::query()
+        $this->productrecoms =  ProductContent::query()
           ->join('products', 'product_contents.product_id', 'products.id')
           ->join('product_brands', 'products.product_brand_id', '=', 'product_brands.id') 
           ->select([
@@ -113,7 +123,7 @@ class HomeList extends Component
             'product_brands.name AS product_brand_name',
         ])->get();
 
-        $this->product_lists =  ProductContent::query()
+        $this->products5 =  ProductContent::query()
           ->join('products', 'product_contents.product_id', 'products.id')
           ->select([
             'product_contents.id',
@@ -136,7 +146,7 @@ class HomeList extends Component
             'product_contents.is_activated',
         ])->get();
 
-        $this->product_brands =  ProductBrand::query()
+        $this->brands =  ProductBrand::query()
           ->select([
             'product_brands.id',
             'product_brands.name',
@@ -179,7 +189,43 @@ class HomeList extends Component
                 'payload' => 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiNmR2WThQaWRFY1hDVTZDaTN4TjJQbjE1TFNVV2hQSHRBQkNKbENCSSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==',  
                 'last_activity' => time(),  
             ]);  
-        }  
+        }
+
+
+        $newProducts =  ProductContent::query()
+          ->join('products', 'product_contents.product_id', 'products.id')
+          ->select([
+            'product_contents.id',
+            'products.id AS products_id',
+            'products.name AS products_name',
+            'products.selling_price AS product_selling_price',
+            'products.discount_value AS product_discount_value',
+            'products.nett_price AS product_nett_price',
+            'products.weight AS product_weight',
+            'products.is_new AS product_is_new',
+            'products.discount_persentage AS product_discount_persentage',
+            'product_contents.title',
+            'product_contents.slug',
+            'product_contents.url',
+            'product_contents.image_url',
+            'product_contents.created_by',
+            'product_contents.updated_by',
+            'product_contents.created_at',
+            'product_contents.updated_at',
+            'product_contents.is_activated',
+        ])->where('products.id', $productId)->get()->toArray();
+        
+
+        // Ambil produk yang sudah ada di session
+        $products = session('products', []);
+
+        // Gabungkan produk baru dengan produk yang sudah ada
+        $products = array_merge($products, $newProducts);
+
+        // Simpan kembali ke session
+        session(['products' => $products]);
+
+        dd(session()->all());
 
         $cart = SalesCart::firstOrCreate(  
             ['session_id' => $sessionId],  
@@ -239,11 +285,31 @@ class HomeList extends Component
         }  
     }
 
-    public function isProductInCart($productId)  
-    {  
-        return SalesCartDetail::where('product_id', $productId)    
-        ->exists(); 
-    }  
+    public function isProductInCart($productId)
+    {
+        // Ambil produk dari session
+        $products = session('products', []);
+    
+        // Pastikan $products adalah array
+        if (!is_array($products)) {
+            return false;
+        }
+    
+        // Periksa apakah produk dengan ID yang diberikan ada di dalam session
+        $isInCart = collect($products)->contains(function ($product) use ($productId) {
+            // Pastikan $product adalah array dan memiliki kunci 'products_id'
+            if (!is_array($product) || !array_key_exists('products_id', $product)) {
+                return false;
+            }
+    
+            // Konversi ke string untuk memastikan perbandingan yang benar
+            return (string) $product['products_id'] === (string) $productId;
+        });
+    
+        return $isInCart;
+    }
+    
+    
   
     public function updateCartItem($cartDetailId, $qty)  
     {  
@@ -263,18 +329,18 @@ class HomeList extends Component
   
     public function removeCartItem($cartDetailId)  
     {  
-        try {  
-            $cartDetail = SalesCartDetail::where('product_id',$cartDetailId);  
-            if ($cartDetail) {  
-                $cartDetail->delete();  
-                $this->dispatch('cartUpdated');  
-                $this->success('Produk dihapus dari keranjang!');
-                $this->redirectRoute('cart-item');
-            }  
+        $products = session('products', []);
 
-        } catch (\Exception $e) {  
-            session()->flash('error', 'Failed to remove cart item: ' . $e->getMessage());  
-        }  
+        $updatedProducts = collect($products)
+            ->reject(function ($product) use ($id) {
+                return $product['id'] == $id;
+            })
+            ->toArray();
+
+        session(['products' => $updatedProducts]);
+
+        return redirect()->route('cart-item')
+            ->with('success', 'Produk berhasil dihapus.');
     }  
   
     public function calculateTotal()  

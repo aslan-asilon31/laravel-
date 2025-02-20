@@ -34,50 +34,62 @@ class ProductCategoryFirstController extends Controller
 
     public function index(Request $request)
     {
-        DB::beginTransaction();
-
-        try {
-            $productCategoryFirsts = ProductCategoryFirst::with('product')->get();
-
-            if ($productCategoryFirsts->isEmpty()) {
-
-                DB::rollBack();
-                return response()->json([
-                    "message" => "failed",
-                    "error" => "No product Category 1 found"
-                ], 404); 
-            }
-
-            DB::commit();
-
-            $pass = [
-                "data" => $productCategoryFirsts,
-                "links" => [
-                    "first" => "http://site.test/api/v1/post?page=1",
-                    "last" => "http://site.test/api/v1/post?page=8",
-                    "prev" => null,
-                    "next" => "http://site.test/api/v1/post?page=2"
-                ],
-                "meta" => [
-                    "total" => $productCategoryFirsts->count(),
-                    "per_page" => 15
-                ],
-                "message" => "success!"
-            ];
-            return response()->json($pass);
     
-        } catch (\Exception $e) {
+            $productCategories = ProductCategoryFirst::get();
 
-            \Log::error('Data failed : ' . $e->getMessage());  
-
-            DB::rollBack();
-            return response()->json([
-                "message" => "failed",
-                "error" => $e->getMessage()
-            ], 500); 
-        }
+            return response()->json($productCategories, 200); 
 
     }
+
+    // public function index(Request $request)
+    // {
+    //     DB::beginTransaction();
+
+    //     try {
+    //         $productCategoryFirsts = ProductCategoryFirst::with('product')->get();
+
+    //         if ($productCategoryFirsts->isEmpty()) {
+
+    //             DB::rollBack();
+    //             return response()->json([
+    //                 "message" => "failed",
+    //                 "error" => "No product Category 1 found"
+    //             ], 404); 
+    //         }
+
+    //         DB::commit();
+
+    //         $pass = [
+    //             "data" => $productCategoryFirsts,
+    //             "links" => [
+    //                 "first" => "http://site.test/api/v1/post?page=1",
+    //                 "last" => "http://site.test/api/v1/post?page=8",
+    //                 "prev" => null,
+    //                 "next" => "http://site.test/api/v1/post?page=2"
+    //             ],
+    //             "meta" => [
+    //                 "total" => $productCategoryFirsts->count(),
+    //                 "per_page" => 15
+    //             ],
+    //             "message" => "success!"
+    //         ];
+    //         return response()->json($pass);
+    
+    //     } catch (\Exception $e) {
+
+    //         \Log::error('Data failed : ' . $e->getMessage());  
+
+    //         DB::rollBack();
+    //         return response()->json([
+    //             "message" => "failed",
+    //             "error" => $e->getMessage()
+    //         ], 500); 
+    //     }
+
+    // }
+
+
+
 
     public function store(Request $request)
     {

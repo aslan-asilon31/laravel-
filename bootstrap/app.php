@@ -22,7 +22,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->validateCsrfTokens(except: [
+            'stripe/*',
+            'http://localhost:3000/product/store',
+            'http://localhost:3000/product/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -32,52 +32,59 @@ use Illuminate\Support\Facades\DB;
 class ProductBrandController extends Controller
 {
 
+
     public function index(Request $request)
     {
-        DB::beginTransaction();
-
-        try {
-            $products = Product::with('productContent')->get();
-
-            if ($products->isEmpty()) {
-
-                DB::rollBack();
-                return response()->json([
-                    "message" => "failed",
-                    "error" => "No products found"
-                ], 404); 
-            }
-
-            DB::commit();
-
-            $pass = [
-                "data" => $products,
-                "links" => [
-                    "first" => "http://site.test/api/v1/post?page=1",
-                    "last" => "http://site.test/api/v1/post?page=8",
-                    "prev" => null,
-                    "next" => "http://site.test/api/v1/post?page=2"
-                ],
-                "meta" => [
-                    "total" => $products->count(),
-                    "per_page" => 15
-                ],
-                "message" => "success!"
-            ];
-            return response()->json($pass);
-    
-        } catch (\Exception $e) {
-
-            \Log::error('Data failed : ' . $e->getMessage());  
-
-            DB::rollBack();
-            return response()->json([
-                "message" => "failed",
-                "error" => $e->getMessage()
-            ], 500); 
-        }
-
+            $brands = ProductBrand::get();
+            return response()->json($brands, 200); 
     }
+
+    // public function index(Request $request)
+    // {
+    //     DB::beginTransaction();
+
+    //     try {
+    //         $products = Product::with('productContent')->get();
+
+    //         if ($products->isEmpty()) {
+
+    //             DB::rollBack();
+    //             return response()->json([
+    //                 "message" => "failed",
+    //                 "error" => "No products found"
+    //             ], 404); 
+    //         }
+
+    //         DB::commit();
+
+    //         $pass = [
+    //             "data" => $products,
+    //             "links" => [
+    //                 "first" => "http://site.test/api/v1/post?page=1",
+    //                 "last" => "http://site.test/api/v1/post?page=8",
+    //                 "prev" => null,
+    //                 "next" => "http://site.test/api/v1/post?page=2"
+    //             ],
+    //             "meta" => [
+    //                 "total" => $products->count(),
+    //                 "per_page" => 15
+    //             ],
+    //             "message" => "success!"
+    //         ];
+    //         return response()->json($pass);
+    
+    //     } catch (\Exception $e) {
+
+    //         \Log::error('Data failed : ' . $e->getMessage());  
+
+    //         DB::rollBack();
+    //         return response()->json([
+    //             "message" => "failed",
+    //             "error" => $e->getMessage()
+    //         ], 500); 
+    //     }
+
+    // }
 
     public function store(Request $request)
     {

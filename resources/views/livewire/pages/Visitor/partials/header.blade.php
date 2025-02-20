@@ -62,7 +62,7 @@
         
               <div class="flex items-center lg:space-x-2">
         
-                <livewire:pages.visitor.cart-resources.cart-list  />
+                <livewire:pages.visitor.cart-resources.cart-list   />
         
                 <button type="button" data-collapse-toggle="ecommerce-navbar-menu-1" aria-controls="ecommerce-navbar-menu-1" aria-expanded="false" class="inline-flex lg:hidden items-center justify-center hover:bg-gray-100 rounded-md dark:hover:bg-gray-700 p-2 text-gray-900 dark:text-white">
                   <span class="sr-only">

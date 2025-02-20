@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 use App\Models\Product;
 use App\Models\SalesCart; 
+
 use App\Models\SalesCartDetail; // Import the SalesCartDetail model  
 use Illuminate\Support\Facades\Session; // Import Session for session management  
 
@@ -20,6 +21,8 @@ class CartItemList extends Component
 {
     public $product_category_first;   
     public $product_category_second;   
+    public $productrecoms  = [];   
+
     public $product_brands;   
     public $product_brand_lists;   
     public $product_contents;   
@@ -67,14 +70,40 @@ class CartItemList extends Component
     
     public function mount() 
     {  
+        $this->cartItems = session('products', []);
         $this->initialize();
-        $this->cartItems = Session::get('cart', []);
-        $this->loadCartItems();  
     }  
 
     public function initialize()  
     {  
         $this->brands = ProductBrand::all();  
+
+        $this->productrecoms =  ProductContent::query()
+            ->join('products', 'product_contents.product_id', 'products.id')
+            ->join('product_brands', 'products.product_brand_id', '=', 'product_brands.id') 
+            ->select([
+            'product_contents.id',
+            'products.id AS products_id',
+            'products.name AS products_name',
+            'products.selling_price AS product_selling_price',
+            'products.discount_value AS product_discount_value',
+            'products.nett_price AS product_nett_price',
+            'products.weight AS product_weight',
+            'products.is_new AS product_is_new',
+            'products.availability AS product_availability',
+            'products.discount_persentage AS product_discount_persentage',
+            'product_contents.title',
+            'product_contents.slug',
+            'product_contents.url',
+            'product_contents.image_url',
+            'product_contents.created_by',
+            'product_contents.updated_by',
+            'product_contents.created_at',
+            'product_contents.updated_at',
+            'product_contents.is_activated',
+            'product_brands.name AS product_brand_name',
+        ])->get();
+
         $this->sessionId = Session::getId();
         // $this->productCategoryFirsts = ProductContent::with('product')->get(); 
         $this->productCategoryFirsts = ProductCategoryFirst::with('product')->get();
@@ -122,13 +151,10 @@ class CartItemList extends Component
     
     public function loadCartItems()  
     {  
-        $cart = SalesCart::where('session_id', $this->sessionId)->first(); 
-        if ($cart) {  
-            $this->cartItems = $cart->details;
-        } else {  
-            $this->cartItems = [];  
-        }  
-    }
+        $this->cartItems = session('products', []);
+
+        return $this->cartItems;
+    } 
 
     public function isProductInCart($productId)  
     {  
@@ -173,8 +199,9 @@ class CartItemList extends Component
     public function calculateTotal()  
     {  
         $total = 0;  
+
         foreach ($this->cartItems as $item) {  
-            $total += $item->amount;  
+            $total += $item['amount'];  
         }  
         return $total;  
     }  

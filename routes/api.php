@@ -4,28 +4,49 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\UserController;  
 use App\Http\Controllers\Api\ActionController;  
+use App\Http\Controllers\Api\contents\ProductController;  
 use App\Http\Controllers\Api\AuthController;  
-use App\Http\Controllers\Api\ProductController;  
+use App\Http\Controllers\Api\contents\ProductCategoryFirstController;  
+use App\Http\Controllers\Api\generals\MarketplaceController;
+use App\Http\Controllers\Api\generals\EmployeeController;
+use App\Http\Controllers\Api\generals\PositionController;
+use App\Http\Controllers\Api\generals\PageController;
+use App\Http\Controllers\Api\generals\PermissionController;
+
+use App\Http\Controllers\Api\contents\MetaPropertyGroupController;
+use App\Http\Controllers\Api\contents\MetaPropertyController;
+use App\Http\Controllers\Api\contents\ProductBrandController;
+use App\Http\Controllers\Api\contents\ProductContentController;
+use App\Http\Controllers\Api\contents\CategoryRecommendationController;
+
+use App\Http\Controllers\Api\sales\CustomerController;
+use App\Http\Controllers\Api\sales\ProductSalesController;
+use App\Http\Controllers\Api\CompanyController;
 
 
-// List all products  
-// Route::get('/products', [ProductController::class, 'index'])->name('products.index');  
-  
-// // Show the form for creating a new product (optional for API)  
-// Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');  
-  
-// // Store a newly created product  
-// Route::post('/products', [ProductController::class, 'store'])->name('products.store');  
-  
-// // Show a specific product  
-// Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');  
-  
-// // Show the form for editing a specific product (optional for API)  
-// Route::get('/products/edit/{id}', [ProductController::class, 'edit'])->name('products.edit');  
-  
-// // Update a specific product  
-// Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');  
-// Route::patch('/products/{id}', [ProductController::class, 'update']); // Alternative for partial updates  
-  
-// Delete a specific product  
-// Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');  
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+ 
+
+Route::get('api/products', [ProductController::class,'index'])->name('products.list');
+Route::get('api/products/create', [ProductController::class,'index'])->name('products.create');
+Route::post('api/products/store', [ProductController::class,'store'])->name('products.store');
+Route::get('api/products/show/{id}/{readonly}', [ProductController::class,'index'])->where('readonly', 'readonly')->name('products.show');
+Route::put('api/products/edit/{id}', [ProductController::class, 'update']);
+Route::delete('api/products/delete/{id}', [ProductController::class, 'destroy']);
+
+
+Route::get('api/product-category-firsts', [ProductCategoryFirstController::class,''])->name('product_category_firsts.list');
+Route::get('api/product-category-firsts/create', [ProductCategoryFirstController::class,''])->name('product_category_firsts.create');
+Route::get('api/product-category-firsts/edit/{id}', [ProductCategoryFirstController::class,''])->name('product_category_firsts.edit');
+Route::get('api/product-category-firsts/show/{id}/{readonly}', [ProductCategoryFirstController::class,''])->where('readonly', 'readonly')->name('product_category_firsts.show');
+
+
+Route::get('api/product-brands', [ProductBrandController::class,'index']);
+Route::get('api/product-brands', [ProductBrandController::class,'index'])->name('product_brands.list');
+Route::get('api/product-brands/create', [ProductBrandController::class,'index'])->name('product_brands.create');
+Route::get('api/product-brands/edit/{id}', [ProductBrandController::class,'index'])->name('product_brands.edit');
+Route::get('api/product-brands/show/{id}/{readonly}', [ProductBrandController::class,'index'])->where('readonly', 'readonly')->name('product_brands.show');
+
+

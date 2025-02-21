@@ -1,6 +1,9 @@
 <div>
 
     <style>
+      header{
+        z-index : 99999 !important;
+      }
       .swiper {
         width: 100%;
         height: 100%;
@@ -21,10 +24,12 @@
         height: 100%;
         object-fit: cover;
       }
+
+        /* Tambahkan gaya untuk header sticky */
     </style>
 
-    <header class="bg-blue-400 dark:bg-gray-900 border-t border-gray-500 dark:border-gray-700 ">
-        <nav class="bg-white  dark:bg-gray-800 antialiased dark:bg-gray-900 border-b border-gray-500 dark:border-gray-700">
+    <header class="relative z-99999! bg-blue-400 dark:bg-gray-900 border-t border-gray-500 dark:border-gray-700 ">
+        <nav class="fixed top-0 right-0 left-0  bg-white  dark:bg-gray-800 antialiased dark:bg-gray-900 border-b border-gray-500 dark:border-gray-700">
           <div class="max-w-screen-xl px-4 mx-auto 2xl:px-0 py-4">
             <div class="flex items-center justify-between">
         

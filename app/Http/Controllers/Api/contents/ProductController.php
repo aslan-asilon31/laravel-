@@ -5,28 +5,7 @@ namespace App\Http\Controllers\Api\contents;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
-use App\Models\ProductContent;
-use App\Models\ProductContentDisplay;
-use App\Models\ProductContentFeature;
-use App\Models\ProductContentMarketplace;
-use App\Models\ProductContentMeta;
-use App\Models\ProductContentQna;
-use App\Models\ProductContentReview;
-use App\Models\ProductContentReviewImage;
-use App\Models\ProductContentReviewSpecification;
-use App\Models\ProductContentReviewVideo;
-use App\Models\MetaPropertyGroup;
-use App\Models\MetaProperty;
-use App\Models\ProductBrand;
-use App\Models\CategoryRecommendation;
-use App\Models\Marketplace;
-use App\Models\Employee;
-use App\Models\Position;
-use App\Models\Page;
-use App\Models\Permission;
-use App\Models\Customer;
-use App\Models\ProductSales;
-use App\Models\SalesOrder;
+
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
@@ -35,7 +14,13 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $products = Product::with('productContent')->get();
-        return response()->json($products, 200); 
+        return response()->json($products, 200);
+    }
+
+    public function fetchById($id)
+    {
+        $products = Product::with('productContent')->where('products.id',$id)->get();
+        return response()->json($products, 200);
     }
     
     // public function index(Request $request)
@@ -90,13 +75,19 @@ class ProductController extends Controller
     {
         // Validasi data yang diterima
         $validatedData = $request->validate([
+            'product_category_first_id' => 'required|string',
+            'product_brand_id' => 'required|string',
             'name' => 'required|string|max:255',
-            'selling_price' => 'required',
+            'selling_price' => 'required|numeric|min:0',
+            'discount_persentage' => 'nullable|numeric|min:0|max:100',
+            'discount_value' => 'nullable|numeric|min:0',
+            'nett_price' => 'required|numeric|min:0',
+            'availability' => 'required|string',
+            
         ]);
 
         // Buat produk baru
         $product = Product::create($validatedData);
-
 
         return response()->json([
             'data' => $product, // Menempatkan produk di dalam atribut 'data'

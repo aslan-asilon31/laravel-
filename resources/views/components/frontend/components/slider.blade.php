@@ -6,6 +6,7 @@
     .swiper {
       width: 100%;
       height: 100%;
+      z-index: 1 !important;
     }
 
     .swiper-slide {
@@ -15,6 +16,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      z-index: 1 !important;
     }
 
     .swiper-slide img {
@@ -22,13 +24,14 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      z-index: 1 !important;
     }
   </style>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
 
-    <nav class="bg-blue-900">
+    <nav class="bg-blue-900" style="z-index: 1 !important;">
         <div class="swiper mySwiper">
           <div class="swiper-wrapper">
             <div class="swiper-slide">

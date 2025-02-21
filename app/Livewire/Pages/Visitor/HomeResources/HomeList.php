@@ -305,11 +305,8 @@ class HomeList extends Component
             // Konversi ke string untuk memastikan perbandingan yang benar
             return (string) $product['products_id'] === (string) $productId;
         });
-    
         return $isInCart;
     }
-    
-    
   
     public function updateCartItem($cartDetailId, $qty)  
     {  

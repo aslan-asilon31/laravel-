@@ -29,11 +29,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
  
 
+Route::get('api/products/{id}', [ProductController::class,'fetchById'])->name('products.fetchById');
 Route::get('api/products', [ProductController::class,'index'])->name('products.list');
 Route::get('api/products/create', [ProductController::class,'index'])->name('products.create');
 Route::post('api/products/store', [ProductController::class,'store'])->name('products.store');
 Route::get('api/products/show/{id}/{readonly}', [ProductController::class,'index'])->where('readonly', 'readonly')->name('products.show');
-Route::put('api/products/edit/{id}', [ProductController::class, 'update']);
+Route::put('api/products/update/{id}', [ProductController::class, 'update']);
 Route::delete('api/products/delete/{id}', [ProductController::class, 'destroy']);
 
 

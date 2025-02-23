@@ -45,8 +45,11 @@ class HomeList extends Component
 
     public $brands = [];  
     public $cartItems;  
+    public $cartItemRes;  
     public $index = 0;  
     public $sessionId;  
+    public $productId;  
+
 
     public function rules()  
     {  
@@ -179,7 +182,8 @@ class HomeList extends Component
 
     }  
 
-    public function addToCart($productId, $sellingPrice, $weight)  
+
+    public function addToCart($productId)  
     { 
         $sessionId = Session::getId(); 
 
@@ -225,7 +229,6 @@ class HomeList extends Component
         // Simpan kembali ke session
         session(['products' => $products]);
 
-        dd(session()->all());
 
         $cart = SalesCart::firstOrCreate(  
             ['session_id' => $sessionId],  
@@ -285,28 +288,59 @@ class HomeList extends Component
         }  
     }
 
+    // public function isProductInCart($productId)
+    // {
+    //     // Ambil produk dari session
+    //     $products = session('products', []);
+    
+    //     // Pastikan $products adalah array
+    //     if (!is_array($products)) {
+    //         return false;
+    //     }
+
+    //     foreach ($products as $product) {
+
+    //         $this->cartItemRes =  ProductContent::query()
+    //             ->join('products', 'product_contents.product_id', 'products.id')
+    //             ->join('product_brands', 'products.product_brand_id', '=', 'product_brands.id') 
+    //             ->select([
+    //             'product_contents.id',
+    //             'products.id AS products_id',
+    //         ])->where('products.id', $product['id'])->get()->toArray();
+    //     }
+
+    //     if($this->cartItemRes){
+    //         return true;
+    //     }else{
+    //         return false;
+    //     }
+
+    
+    // }
+
     public function isProductInCart($productId)
-    {
-        // Ambil produk dari session
-        $products = session('products', []);
-    
-        // Pastikan $products adalah array
-        if (!is_array($products)) {
-            return false;
-        }
-    
-        // Periksa apakah produk dengan ID yang diberikan ada di dalam session
-        $isInCart = collect($products)->contains(function ($product) use ($productId) {
-            // Pastikan $product adalah array dan memiliki kunci 'products_id'
-            if (!is_array($product) || !array_key_exists('products_id', $product)) {
-                return false;
-            }
-    
-            // Konversi ke string untuk memastikan perbandingan yang benar
-            return (string) $product['products_id'] === (string) $productId;
-        });
-        return $isInCart;
+{
+    // Ambil produk dari session
+    $isproducts = session('products', []);
+    // Pastikan $products adalah array
+    if (!is_array($isproducts)) {
+        return false;
     }
+
+    // Periksa apakah produk dengan ID yang diberikan ada di dalam session
+    foreach ($isproducts as $isproduct) {
+        // Pastikan $isproduct adalah array dan memiliki kunci 'id'
+        if (is_array($isproduct) && array_key_exists('id', $isproduct)) {
+            // Konversi ke string untuk memastikan perbandingan yang benar
+            if ((string) $isproduct['id'] === (string) $productId) {
+                return true; // Produk ditemukan di keranjang
+            }
+        }
+    }
+
+    return false; // Produk tidak ditemukan di keranjang
+}
+
   
     public function updateCartItem($cartDetailId, $qty)  
     {  
@@ -377,6 +411,139 @@ class HomeList extends Component
         $vat = $this->calculateVAT();  
         return $total - $discount + $shipping + $vat;  
     }  
+
+    // public function storeCart($id)  
+    // {
+        
+
+    //     $newProducts =  ProductContent::query()
+    //         ->join('products', 'product_contents.product_id', 'products.id')
+    //         ->select([
+    //         'product_contents.id',
+    //         'products.id AS products_id',
+    //         'products.name AS products_name',
+    //         'products.selling_price AS product_selling_price',
+    //         'products.discount_value AS product_discount_value',
+    //         'products.nett_price AS product_nett_price',
+    //         'products.weight AS product_weight',
+    //         'products.is_new AS product_is_new',
+    //         'products.discount_persentage AS product_discount_persentage',
+    //         'product_contents.title',
+    //         'product_contents.slug',
+    //         'product_contents.url',
+    //         'product_contents.image_url',
+    //         'product_contents.created_by',
+    //         'product_contents.updated_by',
+    //         'product_contents.created_at',
+    //         'product_contents.updated_at',
+    //         'product_contents.is_activated',
+    //     ])->where('products.id', $id)->first()->toArray();
+        
+
+        
+    //     // $this->validate([
+    //     //     'name' => 'required',
+    //     //     'price' => 'required|numeric',
+    //     //     'amount' => 'required|numeric',
+    //     // ]);
+
+    //     $products = session('products', []);
+    //     $id = count($products) > 0 ? max(array_column($products, 'id')) + 1 : 1;
+
+    //     $products[] = [
+    //         'id' => $newProducts['products_id'],
+    //         'name' => $newProducts['name'],
+    //         'product_selling_price' => $newProducts['product_selling_price'],
+    //         'product_discount_value' => $newProducts['product_discount_value'],
+    //         'product_nett_price' => $newProducts['product_nett_price'],
+    //         'product_weight' => $newProducts['product_weight'],
+    //         'product_is_new' => $newProducts['product_is_new'],
+    //         'product_discount_persentage' => $newProducts['product_discount_persentage'],
+    //         'slug' => $newProducts['slug'],
+    //         'url' => $newProducts['url'],
+    //         'image_url' => $newProducts['image_url'],
+    //         'created_by' => $newProducts['created_by'],
+    //         'updated_by' => $newProducts['updated_by'],
+    //         'created_at' => $newProducts['created_at'],
+    //         'updated_at' => $newProducts['updated_at'],
+    //         'is_activated' => $newProducts['is_activated'],
+
+    //     ];
+
+    //     session(['products' => $products]);
+
+
+
+    //     // Refresh the products list
+    //     $this->products = $products;
+
+    //     $this->dispatch('productWasAdded');
+    // }
+
+    public function storeCart($id)  
+    {
+        // Ambil data produk berdasarkan ID
+        $newProducts = ProductContent::query()
+            ->join('products', 'product_contents.product_id', '=', 'products.id') // Menggunakan '=' untuk join
+            ->select([
+                'product_contents.id AS product_content_id',
+                'products.id AS products_id',
+                'products.name AS products_name',
+                'products.selling_price AS product_selling_price',
+                'products.discount_value AS product_discount_value',
+                'products.nett_price AS product_nett_price',
+                'products.weight AS product_weight', // Menyelesaikan kolom yang terputus
+            ])
+            ->where('products.id', $id) // Menambahkan kondisi untuk mengambil produk berdasarkan ID
+            ->first(); // Mengambil satu produk
+
+
+        // Jika produk ditemukan, simpan ke dalam keranjang
+        if ($newProducts) {
+            // Logika untuk menyimpan produk ke dalam keranjang
+            $products = session('products', []);
+            $products[] = [
+                'id' => $newProducts->products_id,
+                'amount' => 1,
+            ];
+
+            // Simpan kembali ke session
+            session(['products' => $products]);
+
+            $this->dispatch('productWasAdded');
+        } else {
+            // Jika produk tidak ditemukan, Anda bisa menambahkan logika penanganan error
+            session()->flash('error', 'Product not found.');
+        }
+    }
+
+    public function updateCart()
+    {
+        $this->validate([
+            'amount' => 'required|numeric',
+        ]);
+
+        $products = session('products', []);
+        foreach ($products as &$product) {
+            if ($product['id'] == $this->productId) {
+                $product['amount'] = $this->amount;
+            }
+        }
+
+        session(['products' => $products]);
+        $this->dispatch('productRefresh');
+
+    }
+
+    public function deleteCart($id)
+    {
+        $products = session('products', []);
+        $products = array_filter($products, function($product) use ($id) {
+            return $product['id'] != $id;
+        });
+
+        session(['products' => $products]);
+    }
 
 
 

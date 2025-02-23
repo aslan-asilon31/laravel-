@@ -5,7 +5,6 @@ namespace App\Livewire\Pages\Visitor\CartResources;
 use Livewire\Component;
 use App\Models\ProductBrand;  
 use App\Models\ProductContent;   
-
 use App\Models\SalesCart;  
 use App\Models\SalesCartDetail;  
 use Illuminate\Support\Facades\Session;  
@@ -15,8 +14,13 @@ use Livewire\Attributes\On;
 
 class CartList extends Component  
 {  
+
+    protected $listeners = ['productWasAdded' => 'loadCartItems'];
     public $brands = [];
     public $cartItems = [];
+    public $cartItemRes = [];
+    public $cartItemResCount = [];
+
     public $index = 0;
     public $sessionId;
     public $cartItems1;
@@ -31,6 +35,7 @@ class CartList extends Component
 
     public function mount()  
     {  
+        // Session::forget('products');
         $this->brands = ProductBrand::all();  
         $this->sessionId = Session::getId();  
 
@@ -67,6 +72,7 @@ class CartList extends Component
   
     public function render()  
     {  
+
         return view('livewire.pages.visitor.cart-resources.cart-list');  
     }  
 
@@ -126,11 +132,42 @@ class CartList extends Component
         return redirect()->route('cart-item');  
     } 
     
+    #[On('productWasAdded')] 
     public function loadCartItems()  
     {  
         $this->cartItems = session('products', []);
 
-        return $this->cartItems;
+            foreach ($this->cartItems as $cartItem) {
+
+                $this->cartItemRes =  ProductContent::query()
+                ->join('products', 'product_contents.product_id', 'products.id')
+                ->join('product_brands', 'products.product_brand_id', '=', 'product_brands.id') 
+                ->select([
+                'product_contents.id',
+                'products.id AS products_id',
+                'products.name AS products_name',
+                'products.selling_price AS product_selling_price',
+                'products.discount_value AS product_discount_value',
+                'products.nett_price AS product_nett_price',
+                'products.weight AS product_weight',
+                'products.is_new AS product_is_new',
+                'products.availability AS product_availability',
+                'products.discount_persentage AS product_discount_persentage',
+                'product_contents.title',
+                'product_contents.slug',
+                'product_contents.url',
+                'product_contents.image_url',
+                'product_contents.created_by',
+                'product_contents.updated_by',
+                'product_contents.created_at',
+                'product_contents.updated_at',
+                'product_contents.is_activated',
+                'product_brands.name AS product_brand_name',
+            ])->where('products.id', $cartItem['id'])->get()->toArray();
+
+        }
+
+        return $this->cartItemRes;
     } 
     
     #[Computed]
@@ -142,12 +179,6 @@ class CartList extends Component
 
         return $this->cartItems1;
     } 
-
-    public function isProductInCart($productId) 
-    {  
-        return SalesCartDetail::where('product_id', $productId)    
-        ->exists(); 
-    }
 
     public function updateCartItem($cartDetailId, $qty)  
     {  
@@ -188,10 +219,12 @@ class CartList extends Component
     public function calculateTotal()  
     {  
         // $this->products = session('products', []);
+        $this->cartItems = session('products', []);
+        // dd($this->cartItems);
         $total = 0;  
-        foreach ($this->cartItems as $item) {  
-            $total += $item['amount'];  
-        }  
+        // foreach ($this->cartItems as $item) {  
+        //     $total += $item['amount'];  
+        // }  
         return $total;  
     }  
   
@@ -227,7 +260,95 @@ class CartList extends Component
     public function calculateHemat()  
     {  
         return 0;
-    }  
+    } 
+    
+    
+    
+    public function storeCart($id)  
+    {
+        // Ambil data produk berdasarkan ID
+        $newProducts = ProductContent::query()
+            ->join('products', 'product_contents.product_id', '=', 'products.id') // Menggunakan '=' untuk join
+            ->select([
+                'product_contents.id AS product_content_id',
+                'products.id AS products_id',
+                'products.name AS products_name',
+                'products.selling_price AS product_selling_price',
+                'products.discount_value AS product_discount_value',
+                'products.nett_price AS product_nett_price',
+                'products.weight AS product_weight', // Menyelesaikan kolom yang terputus
+            ])
+            ->where('products.id', $id) // Menambahkan kondisi untuk mengambil produk berdasarkan ID
+            ->first(); // Mengambil satu produk
+
+
+        // Jika produk ditemukan, simpan ke dalam keranjang
+        if ($newProducts) {
+            // Logika untuk menyimpan produk ke dalam keranjang
+            $products = session('products', []);
+            $products[] = [
+                'id' => $newProducts->products_id,
+                'amount' => 1,
+            ];
+
+            // Simpan kembali ke session
+            session(['products' => $products]);
+
+            $this->dispatch('productWasAdded');
+        } else {
+            // Jika produk tidak ditemukan, Anda bisa menambahkan logika penanganan error
+            session()->flash('error', 'Product not found.');
+        }
+    }
+
+
+    public function isProductInCart($productId)
+    {
+        $products = session('products', []);
+        foreach ($products as $product) {
+            if ($product['id'] == $productId) {
+                return true; 
+            }
+        }
+
+        // SalesCartDetail::where('product_id', $productId)    
+        // ->exists();
+
+        $this->dispatch('productDeleteRefresh');
+
+
+        return false; // Produk tidak ada di dalam keranjang
+    }
+
+
+    public function updateCart()
+    {
+        $this->validate([
+            'amount' => 'required|numeric',
+        ]);
+
+        $products = session('products', []);
+        foreach ($products as &$product) {
+            if ($product['id'] == $this->productId) {
+                $product['amount'] = $this->amount;
+            }
+        }
+
+        session(['products' => $products]);
+        $this->dispatch('productRefresh');
+
+    }
+
+    public function deleteCart($id)
+    {
+        $products = session('products', []);
+        $products = array_filter($products, function($product) use ($id) {
+            return $product['id'] != $id;
+        });
+
+        session(['products' => $products]);
+    }
+
 
   
 }  

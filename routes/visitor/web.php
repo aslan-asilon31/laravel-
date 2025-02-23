@@ -55,3 +55,8 @@ Route::delete('/product-cart/{id}', [ProductCartController::class, 'destroy'])->
 
 
 
+Route::get('/product-cart-livewire', \App\Livewire\ProductCartLivewire::class);
+
+
+
+

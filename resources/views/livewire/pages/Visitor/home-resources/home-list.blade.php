@@ -51,15 +51,23 @@
         <!-- Brand -->
         <x-frontend.brand :brands="$brands" lazy="on-load"/>
 
+
+ 
+
         <!-- Produk Terlaris -->
         <x-frontend.produk-terlaris :products5="$products5" lazy="on-load"/>
 
         <!-- Rekomendasi untuk Kamu -->
         <x-frontend.rekomendasi-produk :productrecoms="$productrecoms" lazy="on-load"/>
 
+
         <!-- marketplace -->
         <x-frontend.marketplace :marketplaces="$marketplaces" lazy="on-load"/>
 
+
+        <br><br><br>
+
+        
 
 @Script
 

@@ -30,7 +30,6 @@ class ProdukDetailList extends Component
     
     public function mount()  
     {  
-        
 
         $this->product_content = ProductContent::with([
             'product',
@@ -55,34 +54,6 @@ class ProdukDetailList extends Component
             },
             ])->where('product_id',$this->id)->get()->toArray();
         
-        // dd($this->product_content);
-
-
-    //     $this->product_contents =  ProductContent::query()
-    //     ->join('products', 'product_contents.product_id', 'products.id')
-    //     ->join('product_brands', 'products.product_brand_id', '=', 'product_brands.id') 
-    //     ->select([
-    //       'product_contents.id',
-    //       'products.id AS products_id',
-    //       'products.name AS products_name',
-    //       'products.selling_price AS product_selling_price',
-    //       'products.discount_value AS product_discount_value',
-    //       'products.nett_price AS product_nett_price',
-    //       'products.weight AS product_weight',
-    //       'products.is_new AS product_is_new',
-    //       'products.availability AS product_availability',
-    //       'products.discount_persentage AS product_discount_persentage',
-    //       'product_contents.title',
-    //       'product_contents.slug',
-    //       'product_contents.url',
-    //       'product_contents.image_url',
-    //       'product_contents.created_by',
-    //       'product_contents.updated_by',
-    //       'product_contents.created_at',
-    //       'product_contents.updated_at',
-    //       'product_contents.is_activated',
-    //       'product_brands.name AS product_brand_name',
-    //   ])->get();
 
         $this->brand = ProductCategoryFirst::query()
         ->join('product_category_seconds', 'product_category_firsts.product_category_second_id', 'product_category_seconds.id')

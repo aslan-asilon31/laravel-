@@ -4,7 +4,7 @@
           <div class="flex flex-wrap -mx-4">
             <!-- Product Images -->
             <div class="w-full md:w-1/2 px-4 mb-8">
-              <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHwxfHxoZWFkcGhvbmV8ZW58MHwwfHx8MTcyMTMwMzY5MHww&ixlib=rb-4.0.3&q=80&w=1080" alt="Product"
+              <img src="{{ $product_content[0]['image_url'] }}" alt="Product"
                           class="w-full h-auto rounded-lg shadow-md mb-4" id="mainImage">
               <div class="flex gap-4 py-4 justify-center overflow-x-auto">
                 <img src="https://images.unsplash.com/photo-1505751171710-1f6d0ace5a85?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHwxMnx8aGVhZHBob25lfGVufDB8MHx8fDE3MjEzMDM2OTB8MA&ixlib=rb-4.0.3&q=80&w=1080" alt="Thumbnail 1"
@@ -26,11 +26,11 @@
       
             <!-- Product Details -->
             <div class="w-full md:w-1/2 px-4">
-              <h2 class="text-3xl font-bold mb-2">{{ $product_content['title'] }}</h2>
-              <p class="text-gray-600 mb-4">SKU: {{  $product_content['product']['sku']}} </p>
+              <h2 class="text-3xl font-bold mb-2">{{ $product_content[0]['title'] }}</h2>
+              <p class="text-gray-600 mb-4">SKU: {{  $product_content[0]['product']['sku']}} </p>
               <div class="mb-4">
-                <span class="text-2xl font-bold mr-2">Rp {{  $product_content['product']['nett_price'] <= 0 ? $product_content['product']['selling_price'] : $product_content['product']['nett_price'] }} </span>
-                <span class="text-gray-500 line-through">Rp {{  $product_content['product']['selling_price'] }} </span>
+                <span class="text-2xl font-bold mr-2">Rp {{  $product_content[0]['product']['nett_price'] <= 0 ? $product_content[0]['product']['selling_price'] : $product_content[0]['product']['nett_price'] }} </span>
+                <span class="text-gray-500 line-through">Rp {{  $product_content[0]['product']['selling_price'] }} </span>
               </div>
               <div class="flex items-center mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
@@ -68,7 +68,7 @@
                 <p class="text-gray-700 mb-6">
                 
 
-                    {{ $product_content['excerpt'] }}
+                    {{ $product_content[0]['excerpt'] }}
                     
 
                 </p>
@@ -118,7 +118,7 @@
                 <div id="tab1" class="tabcontent p-4">
                     <h2 class="text-lg font-bold text-gray-800">Spesifikasi</h2>
                     <ul class="list-disc list-inside text-gray-700">
-                      @forelse($product_content['product_content_specifications'] as $specific)
+                      @forelse($product_content[0]['product_content_specifications'] as $specific)
                       {{-- @forelse($product_content->productContentSpecifications() as $specific) --}}
                             {{-- <li>{{ $specific }} </li> --}}
                             <li>{{ $specific['name'] }} </li>
@@ -133,7 +133,7 @@
                 <div id="tab2" class="tabcontent p-4 hidden">
                     <h2 class="text-lg font-bold text-gray-800">Fitur</h2>
                     {{-- @forelse($product_content->productContentFeatures() as $feature) --}}
-                    @forelse($product_content['product_content_features'] as $feature)
+                    @forelse($product_content[0]['product_content_features'] as $feature)
                           <li>{{ $feature['name'] }} </li>
                           @if (!$loop->last) 
                           @endif
@@ -146,7 +146,7 @@
               {{-- <div>
                 <h3 class="text-lg font-semibold mb-2">Key Features:</h3>
                 <ul class="list-disc list-inside text-gray-700">
-                    @foreach($product_content['product_content_features'] as $feature)
+                    @foreach($product_content[0]['product_content_features'] as $feature)
                         <li>{{ $feature['description'] }} </li>
                         @if (!$loop->last) 
                         @endif
@@ -166,11 +166,11 @@
         <div class="container mx-auto px-4 mt-10 bg-gradient-to-r from-cyan-500 to-blue-500  m-8 p-4 rounded-lg border shadow-lg">
           <h2 class="text-2xl font-bold mb-4  text-white underline">Rekomendasi untuk Anda</h2>
           <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 " data-aos="zoom-in">
-              @forelse ($product_content['product'] as $product)
+              @forelse ($product_content[0]['product'] as $product)
                   <div class="bg-white rounded-lg shadow-md p-4">
-                      <img src="{{ $product_content['product']['image_url'] ?? asset('backend-assets/no-image-900x900.png')}}" alt="Rekomendasi 1" class=" object-cover rounded-lg mb-2">
-                      <h3 class="text-lg font-semibold">{{ $product_content['product']['name'] }}</h3>
-                      <p class="text-gray-600">{{ $product_content['product']['nett_price'] }}</p>
+                      <img src="{{ $product_content[0]['product']['image_url'] ?? asset('backend-assets/no-image-900x900.png')}}" alt="Rekomendasi 1" class=" object-cover rounded-lg mb-2">
+                      <h3 class="text-lg font-semibold">{{ $product_content[0]['product']['name'] }}</h3>
+                      <p class="text-gray-600">{{ $product_content[0]['product']['nett_price'] }}</p>
                   </div>
               @empty
                   tidak ada data

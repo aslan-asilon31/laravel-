@@ -32,18 +32,20 @@
                     @if($isInCart)
                         <button 
                             wire:click="removeFromCart('{{  $product5->products_id }}')" 
-                            class="bg-red-500  text-white rounded px-4 py-2">
+                            class="bg-red-500 bg-sm  text-white rounded px-4 py-2">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     @else 
                         <button type="button"
                             wire:click="storeCart('{{  $product5->products_id }}')" 
                             class="bg-green-500  text-white rounded px-4 py-2">
-                            <i class="fa-solid fa-cart-shopping"></i>
-
+                            <i class="fa-solid bg-sm fa-cart-shopping"></i>
                         </button>
-
                     @endif
+                        <a type="button" href="produk-detail/{{ $product5->products_id }}"
+                            class="bg-blue-900 bg-sm text-white rounded px-4 py-2">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
 
                 </div>
 

@@ -15,7 +15,13 @@ use Livewire\Attributes\On;
 class CartList extends Component  
 {  
 
-    protected $listeners = ['productWasAdded' => 'loadCartItems'];
+
+    protected $listeners = [
+        'productWasAdded' => 'loadCartItems',
+        'productWasDeleted' => 'loadCartItems',
+        'cartDeleteUpdated' => 'loadCartItems',
+    ];
+    
     public $brands = [];
     public $cartItems = [];
     public $cartItemRes = [];
@@ -33,6 +39,9 @@ class CartList extends Component
         ];  
     }  
 
+    #[On('productWasAdded')] 
+    #[On('productWasDeleted')] 
+    #[On('cartDeleteUpdated')] 
     public function mount()  
     {  
         // Session::forget('products');
@@ -133,6 +142,7 @@ class CartList extends Component
     } 
     
     #[On('productWasAdded')] 
+    #[On('productWasDeleted')] 
     public function loadCartItems()  
     {  
         $this->cartItems = session('products', []);

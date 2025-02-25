@@ -75,14 +75,14 @@ class ProductController extends Controller
     {
         // Validasi data yang diterima
         $validatedData = $request->validate([
-            'product_category_first_id' => 'required|string',
-            'product_brand_id' => 'required|string',
+            // 'product_category_first_id' => 'required|string',
+            // 'product_brand_id' => 'required|string',
             'name' => 'required|string|max:255',
             'selling_price' => 'required|numeric|min:0',
-            'discount_persentage' => 'nullable|numeric|min:0|max:100',
-            'discount_value' => 'nullable|numeric|min:0',
-            'nett_price' => 'required|numeric|min:0',
-            'availability' => 'required|string',
+            // 'discount_persentage' => 'nullable|numeric|min:0|max:100',
+            // 'discount_value' => 'nullable|numeric|min:0',
+            // 'nett_price' => 'required|numeric|min:0',
+            // 'availability' => 'required|string',
             
         ]);
 

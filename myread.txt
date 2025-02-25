@@ -1,3 +1,5 @@
+bg-gradient-to-r from-cyan-500 to-blue-500
+
 mysqldump -u root -p kbn_20250117_20250204 > kbn_20250117_20250210.sql
 
 

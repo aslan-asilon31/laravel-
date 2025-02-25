@@ -31,12 +31,14 @@ class ProdukList extends Component
     public $product_recommendations = [];
     public $selectedProductId;  
     public $arrayVar = 'false';  
-
+    public $products5 = [];
+    public $productrecoms = [];
     public $filterName = '';  
     public $filterCategory = '';  
     public $category_id;
     public $hargaMin;
     public $hargaMax;
+    public $isLoading = false;
 
     public $products = [];
     protected $productService;
@@ -57,8 +59,10 @@ class ProdukList extends Component
 
     public function mount($id)
     {
+        $this->isLoading = true;
         $this->id = $id;
         $this->loadProducts();  
+        $this->isLoading = false;
 
     }    
   
@@ -67,6 +71,56 @@ class ProdukList extends Component
         $this->brands = ProductBrand::all();
 
         $this->product_category_firsts = ProductCategoryFirst::select('id','name')->get();
+
+
+        $this->products5 =  ProductContent::query()
+            ->join('products', 'product_contents.product_id', 'products.id')
+            ->select([
+            'product_contents.id',
+            'products.id AS products_id',
+            'products.name AS products_name',
+            'products.selling_price AS product_selling_price',
+            'products.discount_value AS product_discount_value',
+            'products.nett_price AS product_nett_price',
+            'products.weight AS product_weight',
+            'products.is_new AS product_is_new',
+            'products.discount_persentage AS product_discount_persentage',
+            'product_contents.title',
+            'product_contents.slug',
+            'product_contents.url',
+            'product_contents.image_url',
+            'product_contents.created_by',
+            'product_contents.updated_by',
+            'product_contents.created_at',
+            'product_contents.updated_at',
+            'product_contents.is_activated',
+        ])->get();
+
+        $this->productrecoms =  ProductContent::query()
+            ->join('products', 'product_contents.product_id', 'products.id')
+            ->join('product_brands', 'products.product_brand_id', '=', 'product_brands.id') 
+            ->select([
+            'product_contents.id',
+            'products.id AS products_id',
+            'products.name AS products_name',
+            'products.selling_price AS product_selling_price',
+            'products.discount_value AS product_discount_value',
+            'products.nett_price AS product_nett_price',
+            'products.weight AS product_weight',
+            'products.is_new AS product_is_new',
+            'products.availability AS product_availability',
+            'products.discount_persentage AS product_discount_persentage',
+            'product_contents.title',
+            'product_contents.slug',
+            'product_contents.url',
+            'product_contents.image_url',
+            'product_contents.created_by',
+            'product_contents.updated_by',
+            'product_contents.created_at',
+            'product_contents.updated_at',
+            'product_contents.is_activated',
+            'product_brands.name AS product_brand_name',
+        ])->get();
 
 
         $query = Product::query()
@@ -340,6 +394,44 @@ class ProdukList extends Component
     {  
         return 0;
     }  
+
+
+    public function storeCart($id)  
+    {
+        // Ambil data produk berdasarkan ID
+        $newProducts = ProductContent::query()
+            ->join('products', 'product_contents.product_id', '=', 'products.id') // Menggunakan '=' untuk join
+            ->select([
+                'product_contents.id AS product_content_id',
+                'products.id AS products_id',
+                'products.name AS products_name',
+                'products.selling_price AS product_selling_price',
+                'products.discount_value AS product_discount_value',
+                'products.nett_price AS product_nett_price',
+                'products.weight AS product_weight', // Menyelesaikan kolom yang terputus
+            ])
+            ->where('products.id', $id) // Menambahkan kondisi untuk mengambil produk berdasarkan ID
+            ->first(); // Mengambil satu produk
+
+
+        // Jika produk ditemukan, simpan ke dalam keranjang
+        if ($newProducts) {
+            // Logika untuk menyimpan produk ke dalam keranjang
+            $products = session('products', []);
+            $products[] = [
+                'id' => $newProducts->products_id,
+                'amount' => 1,
+            ];
+
+            // Simpan kembali ke session
+            session(['products' => $products]);
+
+            $this->dispatch('productWasAdded');
+        } else {
+            // Jika produk tidak ditemukan, Anda bisa menambahkan logika penanganan error
+            session()->flash('error', 'Product not found.');
+        }
+    }
 
     
 

@@ -15,6 +15,7 @@ use App\Models\SalesCart;
 use App\Models\SalesCartDetail; 
 use Illuminate\Support\Facades\Session; 
 use App\Helpers\Cart\Cart;
+use Livewire\Attributes\On; 
 
 class HomeList extends Component
 {
@@ -27,6 +28,7 @@ class HomeList extends Component
     public $product_category_firsts; 
     public $categories; 
     public $marketplaces;   
+    public $isLoading = false;
 
 
     public $product_category_second;   
@@ -71,6 +73,8 @@ class HomeList extends Component
         ->title($this->title);
     }
 
+    #[On('productWasAdded')] 
+    #[On('productWasDeleted')] 
     public function mount() 
     {  
         $cart = new Cart();
@@ -185,7 +189,25 @@ class HomeList extends Component
 
     public function addToCart($productId)  
     { 
-        $sessionId = Session::getId(); 
+        // $sessionId = Session::getId(); 
+        $this->isLoading = true;
+        $id = $this->productId;
+        
+        $products = session('products', []);
+        $id = count($products) > 0 ? max(array_column($products, 'id')) + 1 : 1;
+
+        $products[] = [
+            'id' => $id,
+            'amount' => $this->amount,
+        ];
+
+        session(['products' => $products]);
+
+        // Refresh the products list
+        $this->products = $products;
+
+        $this->dispatch('productWasAdded');
+
 
         if (!DB::table('sessions')->where('id', $sessionId)->exists()) {  
             DB::table('sessions')->insert([  
@@ -274,6 +296,7 @@ class HomeList extends Component
         // $this->emit('refreshCart', $cartDetail);
         // Optionally, you can dispatch an event or flash a message  
         session()->flash('message', 'Product added to cart successfully!');  
+        $this->isLoading = false;
     } 
 
     #[On('cart-created')]
@@ -377,9 +400,13 @@ class HomeList extends Component
     public function calculateTotal()  
     {  
         $total = 0;  
+        $this->cartItems = session('products', []);
+
         foreach ($this->cartItems as $item) {  
             $total += $item->amount;  
         }  
+
+        dd($total);
         return $total;  
     }  
   
@@ -535,14 +562,31 @@ class HomeList extends Component
 
     }
 
-    public function deleteCart($id)
+    // public function removeFromCart($id)
+    // {
+    //     $products = session('products', []);
+    //     $products = array_filter($products, function($product) use ($id) {
+    //         return $product['id'] != $id;
+    //     });
+    //     session(['products' => $products]);
+    // }
+
+    public function removeFromCart($id)
     {
+
+        $this->isLoading = true;
+
         $products = session('products', []);
         $products = array_filter($products, function($product) use ($id) {
             return $product['id'] != $id;
         });
 
         session(['products' => $products]);
+
+        $this->dispatch('productWasDeleted');
+
+        $this->isLoading = false;
+
     }
 
 

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Route::get('/login', \App\Livewire\Pages\AuthenticationResources\Login::class)->name('login');
+Route::get('/login', \App\Livewire\Pages\AuthenticationResources\Login::class)->name('login');
 
 
 Route::group(['middleware' => 'auth'], function () {

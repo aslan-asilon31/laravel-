@@ -38,7 +38,6 @@ class ProductContentFeatureCrud extends Component
   #[\Livewire\Attributes\Locked]
   protected $masterModel = \App\Models\ProductContentFeature::class;
 
-  
   #[\Livewire\Attributes\Locked]
   public string $readonly = '';
 
@@ -55,6 +54,7 @@ class ProductContentFeatureCrud extends Component
   public array $options = [];
   
   public bool $myModalProductContentFeatureForm = false;
+  public bool $crudModal = false;
 
 
   public ProductContentFeatureForm $masterForm;
@@ -86,8 +86,7 @@ class ProductContentFeatureCrud extends Component
       ?->max('ordinal') + 1;
 
     $this->masterForm->name = $this->productContent['product']['name'] . ' Feature Image ' . sprintf('%02d', $this->masterForm->ordinal);
-    $this->myModalProductContentFeatureForm = true;
-
+    $this->crudModal = true;
   }
 
   public function storeProductContentFeature()
@@ -155,7 +154,7 @@ class ProductContentFeatureCrud extends Component
       ->toArray();
 
     $this->masterForm->fill($record);
-    $this->myModalProductContentFeatureForm = true;
+    $this->crudModal = true;
 
   }
 

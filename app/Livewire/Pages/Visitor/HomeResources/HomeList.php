@@ -30,7 +30,6 @@ class HomeList extends Component
     public $marketplaces;   
     public $isLoading = false;
 
-
     public $product_category_second;   
     public $product_brands = []; 
 

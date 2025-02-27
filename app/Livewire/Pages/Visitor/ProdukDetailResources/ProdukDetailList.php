@@ -7,7 +7,14 @@ use App\Models\Product;
 use App\Models\ProductContent;   
 use App\Models\ProductCategoryFirst;
 use App\Models\ProductCategorySecond;  
+use App\Models\Marketplace;
+use App\Models\ProductBrand;   
 use Illuminate\Support\Facades\DB; 
+use App\Models\SalesCart;  
+use App\Models\SalesCartDetail; 
+use Illuminate\Support\Facades\Session; 
+use App\Helpers\Cart\Cart;
+use Livewire\Attributes\On; 
 
 
 class ProdukDetailList extends Component
@@ -226,7 +233,81 @@ class ProdukDetailList extends Component
     public function calculateHemat()  
     {  
         return 0;
-    }  
+    } 
+    
+    public function removeFromCart($id)
+    {
+
+        $this->isLoading = true;
+
+        $products = session('products', []);
+        $products = array_filter($products, function($product) use ($id) {
+            return $product['id'] != $id;
+        });
+
+        session(['products' => $products]);
+
+        $this->dispatch('productWasDeleted');
+
+        $this->isLoading = false;
+
+    }
+
+    public function updateCart()
+    {
+        $this->validate([
+            'amount' => 'required|numeric',
+        ]);
+
+        $products = session('products', []);
+        foreach ($products as &$product) {
+            if ($product['id'] == $this->productId) {
+                $product['amount'] = $this->amount;
+            }
+        }
+
+        session(['products' => $products]);
+        $this->dispatch('productRefresh');
+
+    }
+
+    public function storeCart($id)  
+    {
+        // Ambil data produk berdasarkan ID
+        $newProducts = ProductContent::query()
+            ->join('products', 'product_contents.product_id', '=', 'products.id') // Menggunakan '=' untuk join
+            ->select([
+                'product_contents.id AS product_content_id',
+                'products.id AS products_id',
+                'products.name AS products_name',
+                'products.selling_price AS product_selling_price',
+                'products.discount_value AS product_discount_value',
+                'products.nett_price AS product_nett_price',
+                'products.weight AS product_weight', // Menyelesaikan kolom yang terputus
+            ])
+            ->where('products.id', $id) // Menambahkan kondisi untuk mengambil produk berdasarkan ID
+            ->first(); // Mengambil satu produk
+
+
+        // Jika produk ditemukan, simpan ke dalam keranjang
+        if ($newProducts) {
+            // Logika untuk menyimpan produk ke dalam keranjang
+            $products = session('products', []);
+            $products[] = [
+                'id' => $newProducts->products_id,
+                'amount' => 1,
+            ];
+
+            // Simpan kembali ke session
+            session(['products' => $products]);
+
+            $this->dispatch('productWasAdded');
+        } else {
+            // Jika produk tidak ditemukan, Anda bisa menambahkan logika penanganan error
+            session()->flash('error', 'Product not found.');
+        }
+    }
+
 
 
 

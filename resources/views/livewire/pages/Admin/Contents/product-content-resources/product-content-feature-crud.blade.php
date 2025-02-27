@@ -28,7 +28,7 @@
   </div>
 
   <div class="mb-2">
-    <x-button label="Add" wire:click.debounce.300ms="create()" class="btn-ghost btn-outline" />
+    <x-button label="Add" wire:click.debounce.300ms="createProductContentFeature()" class="btn-ghost btn-outline" />
   </div>
 
   <div class="overflow-x-auto rounded-lg border min-h-80">
@@ -71,7 +71,7 @@
 
   <x-modal wire:model="crudModal" persistent>
 
-    <x-form wire:submit="{{ $masterId ? 'update' : 'store' }}" wire:confirm="Are you sure?">
+    <x-form wire:submit="{{ $masterId ? 'updateProductContentFeature' : 'storeProductContentFeature' }}" wire:confirm="Are you sure?">
 
       <x-input wire:model="masterForm.name" label="Name" placeholder="Name" :readonly="$isReadonly" />
 

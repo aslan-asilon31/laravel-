@@ -1,6 +1,6 @@
 <?php 
 
-
+return [
 'paths' => [
       'api/*',
       'login',
@@ -15,9 +15,15 @@
    ],
 
    'allowed_methods' => ['*'],
-   'allowed_origins' => [env('FRONTEND_URL')],
+   'allowed_origins' => [
+      env('FRONTEND_URL', 'http://localhost:3000'),
+      env('FRONTEND_URL', 'http://localhost:5173')
+      ],
    'allowed_origins_patterns' => [],
    'allowed_headers' => ['*'],
    'exposed_headers' => [],
    'max_age' => 0,
    'supports_credentials' => true,
+
+
+];

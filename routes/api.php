@@ -44,10 +44,5 @@ Route::get('api/product-category-firsts/edit/{id}', [ProductCategoryFirstControl
 Route::get('api/product-category-firsts/show/{id}/{readonly}', [ProductCategoryFirstController::class,''])->where('readonly', 'readonly')->name('product_category_firsts.show');
 
 
-Route::get('api/product-brands', [ProductBrandController::class,'index']);
-Route::get('api/product-brands', [ProductBrandController::class,'index'])->name('product_brands.list');
-Route::get('api/product-brands/create', [ProductBrandController::class,'index'])->name('product_brands.create');
-Route::get('api/product-brands/edit/{id}', [ProductBrandController::class,'index'])->name('product_brands.edit');
-Route::get('api/product-brands/show/{id}/{readonly}', [ProductBrandController::class,'index'])->where('readonly', 'readonly')->name('product_brands.show');
 
 

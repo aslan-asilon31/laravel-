@@ -26,6 +26,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'stripe/*',
             'http://localhost:3000/product/store',
             'http://localhost:3000/product/*',
+            'http://localhost:5173/product/brands',
+            'http://localhost:5173/brands/create',
+            'http://localhost:5173/product/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

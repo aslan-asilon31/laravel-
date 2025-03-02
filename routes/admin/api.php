@@ -45,14 +45,16 @@ use App\Http\Controllers\Api\CompanyController;
     Route::get('api/meta-properties', [MetaPropertyController::class,'index']);
 
 
-
-
     Route::get('api/product-brands', [ProductBrandController::class,'index']);
     Route::get('api/product-brands', [ProductBrandController::class,'index'])->name('product_brands.list');
+    Route::post('api/product-brands/store', [ProductBrandController::class,'store'])->name('products.store');
     Route::get('api/product-brands/create', [ProductBrandController::class,'index'])->name('product_brands.create');
     Route::get('api/product-brands/edit/{id}', [ProductBrandController::class,'index'])->name('product_brands.edit');
     Route::get('api/product-brands/show/{id}/{readonly}', [ProductBrandController::class,'index'])->where('readonly', 'readonly')->name('product_brands.show');
     
+
+
+
     Route::get('api/product-contents/edit/{id}/metas', [ProductContentMetaController::class,'index']);
     Route::get('api/product-contents/edit/{id}/displays', [ProductContentDisplayController::class,'index']);
     Route::get('api/product-contents/edit/{id}/videos', [ProductContentVideoController::class,'index']);
@@ -123,6 +125,8 @@ use App\Http\Controllers\Api\CompanyController;
     Route::get('api/customers/create', [CustomerController::class,'index']);
     Route::get('api/customers/edit/{id}', [CustomerController::class,'index'])->name('customer.edit');
     Route::get('api/customers/show/{id}/{readonly}', [CustomerController::class,'index'])->where('readonly', 'readonly')->name('customer.show');
+    Route::post('api/customers/store', [CustomerController::class,'store'])->name('customer.store');
+
 
     Route::get('api/sales-orders', [SalesOrderController::class,'index']);
     Route::get('api/sales-orders/create', [SalesOrderController::class,'index']);

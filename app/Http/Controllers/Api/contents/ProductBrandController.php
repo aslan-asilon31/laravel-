@@ -28,6 +28,8 @@ use App\Models\Customer;
 use App\Models\ProductSales;
 use App\Models\SalesOrder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 
 class ProductBrandController extends Controller
 {
@@ -35,8 +37,12 @@ class ProductBrandController extends Controller
 
     public function index(Request $request)
     {
-            $brands = ProductBrand::get();
-            return response()->json($brands, 200); 
+        $records = ProductBrand::orderBy('created_at', 'desc')->paginate(20);
+        return response()->json([
+          'success' => true,
+          'data' => $records,
+          'csrf_token' => csrf_token(),
+        ], Response::HTTP_OK);
     }
 
     // public function index(Request $request)

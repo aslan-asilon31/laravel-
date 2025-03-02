@@ -5,16 +5,21 @@ namespace App\Http\Controllers\Api\contents;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
-
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
 
     public function index(Request $request)
     {
-        $products = Product::with('productContent')->get();
-        return response()->json($products, 200);
+        $records = Product::with('productContent')->orderBy('created_at', 'desc')->paginate(20);
+        return response()->json([
+          'success' => true,
+          'data' => $records,
+        ], Response::HTTP_OK);
+ 
     }
 
     public function fetchById($id)

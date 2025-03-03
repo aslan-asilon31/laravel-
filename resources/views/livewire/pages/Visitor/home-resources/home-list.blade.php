@@ -1,6 +1,5 @@
 <div >
 
-
         <style>
             .swiper {
             width: 100%;
@@ -79,7 +78,6 @@
 
         
 
-@Script
 
     <script>
         $wire.on('cek', () => {
@@ -132,8 +130,22 @@
                     },
                 },
             });
+            
+
+    document.addEventListener('livewire:init', () => {
+        
+        Livewire.on(('productWasDeleted') => {
+            alert('produt was deleted')
+        })
+        
+        Livewire.on(('productWasAdded') => {
+            alert('produt was added')
+        })
+
+    })
+ 
     </script>
-@Endscript
+
 
 
 </div>

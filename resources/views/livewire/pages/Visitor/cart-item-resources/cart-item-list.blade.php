@@ -95,7 +95,10 @@
                   </dl>
                 </div>
       
-                <a href="#" class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-dark hover:bg-primary-800 focus:outline-none bg-gradient-to-r from-cyan-500 to-blue-500 text-white focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 bordedr-lg shadow-lg">Proses Belanja</a>
+                <a type="button" x-on:click="isLoadingDetails = true; setTimeout(() => isLoadingDetails = false, 2000)" 
+                   href="/cart-checkout" class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-dark hover:bg-primary-800 focus:outline-none bg-gradient-to-r from-cyan-500 to-blue-500 text-white focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 bordedr-lg shadow-lg">
+                   Proses Belanja
+                </a>
       
                 <div class="flex items-center justify-center gap-2">
                   <span class="text-sm font-normal text-gray-500 dark:text-gray-400"> atau </span>

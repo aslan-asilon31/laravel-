@@ -72,7 +72,6 @@ class ProdukList extends Component
 
         $this->product_category_firsts = ProductCategoryFirst::select('id','name')->get();
 
-
         $this->products5 =  ProductContent::query()
             ->join('products', 'product_contents.product_id', 'products.id')
             ->select([

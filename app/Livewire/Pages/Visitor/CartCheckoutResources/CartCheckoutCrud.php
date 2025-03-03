@@ -15,7 +15,7 @@ use App\Models\SalesCartDetail;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use App\Services\ProductService;
-use App\Services\CartService;
+use Illuminate\Support\Str;
 
 class CartCheckoutCrud extends Component
 {
@@ -32,92 +32,140 @@ class CartCheckoutCrud extends Component
     public $randomNumber;
   
 
+
     use \Mary\Traits\Toast;
 
+    use \Livewire\WithFileUploads;
+    use \App\Helpers\ImageUpload\Traits\WithImageUpload;
+    use \App\Helpers\FormHook\Traits\WithFormHook;
+    use \App\Helpers\Permission\Traits\WithPermission;
+    use \Mary\Traits\Toast;
+  
+    #[\Livewire\Attributes\Locked]
+    public null|string $id = null;
     public CartCheckoutForm $masterForm;
 
+    
     public $products;
     protected $productService;
     public $cartItems = [];  
     protected $cartService;
 
-    public function __construct()
+    public function mount()
     {
-        $this->cartService = new CartService();
     }
 
-    public function submit()  
+
+    public function store()  
     {  
         $sessionId = Session::getId();
-
-        $validatedForm = $this->validate(
-            $this->masterForm->rules(),
-            [],
-            $this->masterForm->attributes()
-        )['masterForm'];
 
         \Illuminate\Support\Facades\DB::beginTransaction();
         try {
 
-            $customer = Customer::create([  
-                'first_name' => $validatedForm['first_name'],  
-                'last_name' => $validatedForm['last_name'],  
-                'email' => $validatedForm['email'],  
-                'phone' => $validatedForm['phone'],  
-                'created_by' => $validatedForm['first_name'].' '.$validatedForm['last_name'],   
-                'updated_by' => $validatedForm['first_name'].' '.$validatedForm['last_name'],   
-                'is_activated' => 1, 
-            ]);  
-            \Illuminate\Support\Facades\DB::commit(); 
+            $customers = session('customers', []);
+
+
+            // Cek apakah ada customer dengan session_id yang sama
+            $customerExists = false;
+
+
+
+            foreach ($customers as $customer) {
+                // Pastikan kunci 'session_id' ada sebelum mengaksesnya
+                if (isset($customer['session_id']) && $customer['session_id'] === $sessionId) {
+                    $customerExists = true;
+                    break; // Keluar dari loop jika customer ditemukan
+                }
+            }
+
+            if (!$customerExists) {
+                $customer = Customer::create([  
+                    'first_name' => $this->masterForm->first_name  ?? '',  
+                    'last_name' => $this->masterForm->last_name  ?? '',  
+                    'email' => $this->masterForm->email  ?? '',  
+                    'phone' => $this->masterForm->phone  ?? '',  
+                    'created_by' => $this->masterForm->first_name.' '.$this->masterForm->last_name  ?? '',   
+                    'updated_by' => $this->masterForm->first_name.' '.$this->masterForm->last_name  ?? '',   
+                    'is_activated' => 1, 
+                ]);  
+        
+    
+                $customers[] = [
+                    'id' => $customer->id  ?? '',
+                    'session_id' => Session::getId(),
+                ];
+    
+                session(['customers' => $customers]);
+            }
 
 
             $this->formattedDate = Carbon::now()->format('d/F/Y');
 
             $this->randomNumber = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
-
+            
             $salesOrder = SalesOrder::create([  
-                'employee_id' => auth()->user()->id ?? '',  
-                'customer_id' => $customer->id,
+                'employee_id' => auth()->user()->id ?? '9d8c81b8-37ad-4402-88ec-c5b65afb08c6',  
+                'customer_id' => $customer->id ?? '',
                 'date' => now(),
-                'number' => 'so-'.$this->formattedDate.'-'.$this->randomNumber,
-                'total_amount' => $this->cartService->calculateFinalTotal(), 
+                'number' => 'so-'.$this->formattedDate.'-'.$this->randomNumber  ?? '',
+                'total_amount' => $this->calculateFinalTotal(), 
                 'status' => 'pending', 
                 'fraud_status' => 'identifying', 
-                'created_by' => $validatedForm['first_name'] ." ". $validatedForm['last_name'] , 
+                'created_by' => $this->masterForm->first_name ." ". $this->masterForm->last_name ?? '', 
                 'is_activated' => 1, 
-            ]);  
-            \Illuminate\Support\Facades\DB::commit(); 
-            dd($salesOrder);
+            ]); 
+            
+                
+            $sales_orders = session('sales_orders', []);
+            $sales_orders[] = [
+                'id' => $sales_order->id  ?? '',
+            ];
+            session(['sales_orders' => $sales_orders]);
 
 
             SalesShipping::create([  
-                'sales_order_id' => $salesOrder->id,  
-                'address' => $validatedForm['address'],  
-                'postal_code' => $validatedForm['postal_code'], 
-                'created_by' => $validatedForm['first_name'] ." ". $validatedForm['last_name'] , 
+                'sales_order_id' => $salesOrder->id  ?? '',  
+                'address' => $this->masterForm->address ?? '',  
+                'postal_code' => $this->masterForm->postal_code ?? '', 
+                'created_by' => $this->masterForm->first_name ." ". $this->masterForm->last_name , 
                 'is_activated' => 1, 
             ]);  
-            \Illuminate\Support\Facades\DB::commit(); 
 
+            $sales_shippings = session('sales_shippings', []);
+            $sales_shippings[] = [
+                'id' => $sales_shipping->id  ?? '',
+            ];
+            session(['sales_shippings' => $sales_shippings]);
 
 
             $salesInvoice = SalesInvoice::create([  
                 'sales_order_id' => $salesOrder->id,  
                 'date' => now(),  
                 'number' => 'so-'.$this->formattedDate.'-'.$this->randomNumber,  
-                'created_by' => $validatedForm['first_name'] ." ". $validatedForm['last_name'] , 
+                'created_by' => $this->masterForm->first_name ." ". $this->masterForm->last_name ?? '', 
                 'is_activated' => 1, 
-            ]);  
-            \Illuminate\Support\Facades\DB::commit(); 
+            ]);
+            
+            $sales_invoices = session('sales_invoices', []);
+            $sales_invoices[] = [
+                'id' => $sales_invoice->id  ?? '',
+            ];
+            session(['sales_invoices' => $sales_invoices]);
             
             SalesPayment::create([  
                 'sales_invoice_id' => $salesInvoice->id,  
                 'date' => now(),  
                 'number' => 'so-'.$this->formattedDate.'-'.$this->randomNumber,  
-                'created_by' => $validatedForm['first_name'] ." ". $validatedForm['last_name'] , 
+                'created_by' => $this->masterForm->first_name ." ". $this->masterForm->last_name , 
                 'is_activated' => 1, 
-            ]);  
-            \Illuminate\Support\Facades\DB::commit(); 
+            ]); 
+            
+            $sales_payments = session('sales_payments', []);
+            $sales_payments[] = [
+                'id' => $sales_payment->id  ?? '',
+            ];
+            session(['sales_payments' => $sales_payments]);
 
 
             $salesCarts = SalesCart::with('details')->where('session_id', $sessionId)->get();  
@@ -136,7 +184,6 @@ class CartCheckoutCrud extends Component
                     ];  
                 });  
             });  
-            \Illuminate\Support\Facades\DB::commit(); 
             
             // Mengonversi koleksi menjadi array untuk penyimpanan massal  
             $productsArray = $products->toArray();  
@@ -157,8 +204,24 @@ class CartCheckoutCrud extends Component
                     'updated_at' => now(),  
                 ];  
             }, $productsArray)); 
-            \Illuminate\Support\Facades\DB::commit(); 
+            
+            $sales_order_details = session('sales_order_details', []);
+            $sales_order_details[] = [
+                'id' => $sales_order_detail->id  ?? '',
+            ];
+            session(['sales_order_details' => $sales_order_details]);
 
+
+            SalesPayment::create([  
+                'sales_invoice_id' => $salesInvoice->id,  
+                'date' => now(),  
+                'number' => 'so-'.$this->formattedDate.'-'.$this->randomNumber,  
+                'created_by' => $this->masterForm->first_name ." ". $this->masterForm->last_name , 
+                'is_activated' => 1, 
+            ]); 
+            
+
+            
 
             // Mengumpulkan semua detail ID yang terkait dengan SalesCart  
             $detailIds = $salesCarts->flatMap(function ($cart) {  
@@ -190,6 +253,36 @@ class CartCheckoutCrud extends Component
         // Tandai bahwa formulir telah disubmit    
         $this->isSubmitted = true;    
     }  
+
+    public function calculateDiscount()  
+    {  
+        // Example discount calculation (15% of total)  
+        $total = $this->calculateTotal();  
+        return $total * 0.11;  
+    }  
+
+    public function calculateTotal()  
+    {  
+        $total = 0;  
+        $this->cartItems = session('products', []);
+
+        foreach ($this->cartItems as $item) {  
+            $total += $item['amount'] ?? 0;  
+        } 
+        return $total;  
+    } 
+    
+    
+    public function calculateFinalTotal()  
+    {  
+        $total = $this->calculateTotal();  
+        $discount = $this->calculateDiscount();  
+        return $total - $discount;
+        // $shipping = $this->calculateShipping();  
+        // $vat = $this->calculateVAT();  
+        // return $total - $discount + $shipping + $vat;  
+    } 
+
 
     public function render()
     {

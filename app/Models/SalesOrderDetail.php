@@ -26,5 +26,10 @@ class SalesOrderDetail extends Model
         return $this->hasOne(SalesOrder::class);
     }
 
+    public function product()
+    {
+        return $this->hasOne(Product::class,'id');
+    }
+
   }
   

@@ -59,7 +59,8 @@
                     
                             <!-- Tombol Filter -->
                             <div>
-                                <button wire:click="loadProducts" class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-md py-2 hover:bg-blue-600">Terapkan Filter</button>
+                                <button type="button"
+                                x-on:click="isLoading = true; $wire.loadProducts().then(() => isLoading = false)" class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-md py-2 hover:bg-blue-600">Terapkan Filter</button>
                             </div>
                         </div>
                     </div>

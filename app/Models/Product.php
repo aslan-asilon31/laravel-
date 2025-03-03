@@ -35,5 +35,10 @@ class Product extends Model
       return $this->belongsTo(ProductBrand::class, 'product_brand_id');
   }
 
+  public function salesOrderDetail()  
+  {  
+      return $this->belongsTo(SalesOrderDetail::class, 'product_id');
+  }
+
   
 }

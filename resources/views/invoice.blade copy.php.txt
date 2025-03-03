@@ -48,8 +48,8 @@
                                 </div>
                                 <div class="col-auto">
                                     <h1 class="big-title">Invoice</h1>
-                                    <span><b>Invoice No: </b> #dselk;gmsdfg</span>
-                                    <span><b>Date: </b> 342535/543646/5</span>
+                                    <span><b>Invoice No: </b> #{{ $customer->id }}</span>
+                                    <span><b>Date: </b> {{ $customer->created_at }}</span>
                                 </div>
                             </div>
                         </header>
@@ -59,8 +59,8 @@
                                     <div class="invoice-left border-right">
                                         <b>Invoice To:</b>
                                         <address>
-                                            {{ $customerInvoice->first_name .' '.  $customerInvoice->last_name}} <br> 
-                                            email : {{ $customerInvoice->email }}
+                                            {{ $customer->customer->first_name .' '.  $customer->customer->last_name}} <br> 
+                                            email : {{ $customer->customer->email }}
                                         </address>
                                     </div>
                                 </div>
@@ -79,7 +79,7 @@
                             <div class="col-6">
                                 <div class="text-start">
                                     <b>Order Date:</b> <br>
-                                    {{-- <span>{{ $customerInvoice->created_at }}</span> --}}
+                                    <span>{{ $customer->created_at }}</span>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -94,7 +94,7 @@
                             <thead>
                                 <tr>
                                     <th>Product No.</th>
-                                    <th>Product Name</th>
+                                    <th>Product Description</th>
                                     <th>Price</th>
                                     <th>Qty Sold</th>
                                     <th>Amount</th>
@@ -102,17 +102,13 @@
                             </thead>
                             <tbody>
                                 
-                                @forelse($salesOrderDetailInvoices as $salesOrderDetail)
                                 <tr>
-                                    <td>{{ $salesOrderDetail->products->id ?? ''  }}</td>
-                                    <td>{{ $salesOrderDetail->products->name ?? ''  }}</td>
-                                    <td>{{ $salesOrderDetail->selling_price ?? ''  }}</td>
-                                    <td>{{ $salesOrderDetail->qty ?? ''  }}</td>
-                                    <td>{{ $salesOrderDetail->amount ?? ''  }}</td>
+                                    <td>711011</td>
+                                    <td>{{ $order->product->name ?? ''  }}</td>
+                                    <td>{{ $order->product->nett_price ?? ''  }}</td>
+                                    <td>{{ $order->product->sold_qty ?? ''  }}</td>
+                                    <td>{{ $order->product->total_amount ?? ''  }}</td>
                                 </tr>
-                                @empty 
-                                    -
-                                @endforelse
                             </tbody>
                         </table>
 

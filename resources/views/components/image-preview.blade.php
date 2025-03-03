@@ -11,7 +11,6 @@
 @endif --}}
 
 @props(['fnRemoveImageUrl' => 'removeImageUrl'])
-
 @if ($imageUrl)
   <div class="flex justify-center border">
     <div class="border">

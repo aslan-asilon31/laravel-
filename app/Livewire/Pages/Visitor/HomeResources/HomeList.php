@@ -76,6 +76,11 @@ class HomeList extends Component
     #[On('productWasDeleted')] 
     public function mount() 
     {  
+        dd(session()->all());
+        $session_id = session('session_id');
+        $session_id = Session::getId();
+        session(['session_id' => $session_id]);
+
         $cart = new Cart();
         $this->cartItems = session('products', []);
 
@@ -182,6 +187,7 @@ class HomeList extends Component
         ->take(2)  
         ->get();
 
+        $this->calculateTotal();
 
     }  
 
@@ -402,10 +408,8 @@ class HomeList extends Component
         $this->cartItems = session('products', []);
 
         foreach ($this->cartItems as $item) {  
-            $total += $item->amount;  
-        }  
-
-        dd($total);
+            $total += $item['amount'] ?? 0;  
+        } 
         return $total;  
     }  
   
@@ -413,7 +417,7 @@ class HomeList extends Component
     {  
         // Example discount calculation (15% of total)  
         $total = $this->calculateTotal();  
-        return $total * 0.15;  
+        return $total * 0.11;  
     }  
   
     public function calculateShipping()  
@@ -433,9 +437,10 @@ class HomeList extends Component
     {  
         $total = $this->calculateTotal();  
         $discount = $this->calculateDiscount();  
-        $shipping = $this->calculateShipping();  
-        $vat = $this->calculateVAT();  
-        return $total - $discount + $shipping + $vat;  
+        return $total - $discount;
+        // $shipping = $this->calculateShipping();  
+        // $vat = $this->calculateVAT();  
+        // return $total - $discount + $shipping + $vat;  
     }  
 
     // public function storeCart($id)  
@@ -519,9 +524,10 @@ class HomeList extends Component
                 'products.discount_value AS product_discount_value',
                 'products.nett_price AS product_nett_price',
                 'products.weight AS product_weight', // Menyelesaikan kolom yang terputus
+                'products.sku AS products_sku',
             ])
             ->where('products.id', $id) // Menambahkan kondisi untuk mengambil produk berdasarkan ID
-            ->first(); // Mengambil satu produk
+        ->first(); // Mengambil satu produk
 
 
         // Jika produk ditemukan, simpan ke dalam keranjang
@@ -530,7 +536,12 @@ class HomeList extends Component
             $products = session('products', []);
             $products[] = [
                 'id' => $newProducts->products_id,
-                'amount' => 1,
+                'name' => $newProducts->products_name,
+                'selling_price' => $newProducts->products_selling_price,
+                'nett_price' => $newProducts->products_nett_price,
+                'qty' => 1,
+                'amount' => $newProducts->products_nett_price,
+                'sku' => $newProducts->products_sku,
             ];
 
             // Simpan kembali ke session

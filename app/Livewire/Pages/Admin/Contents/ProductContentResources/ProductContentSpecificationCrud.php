@@ -4,15 +4,10 @@ namespace App\Livewire\Pages\Admin\Contents\ProductContentResources;
 
 use App\Livewire\Pages\Admin\Contents\ProductContentResources\Forms\ProductContentSpecificationForm;
 use Livewire\Component;
-
+use Livewire\Attributes\On; 
 
 class ProductContentSpecificationCrud extends Component
 {
-  public function render()
-  {
-    return view('livewire.pages.admin.contents.product-content-resources.product-content-specification-crud')
-      ->title($this->title);
-  }
 
   public string $title = 'Product Content Specification';
   public string $url = '/product-contents';
@@ -45,7 +40,10 @@ class ProductContentSpecificationCrud extends Component
 
   #[\Livewire\Attributes\Locked]
   public array $options = [];
-  
+
+  #[\Livewire\Attributes\Locked]
+  protected $parentModel = \App\Models\ProductContent::class;
+
   public ProductContentSpecificationForm $masterForm;
 
   private string $uploadFolderName = 'files/images/product-content-specifications';
@@ -56,6 +54,49 @@ class ProductContentSpecificationCrud extends Component
 
   public array $productContent = [];
 
+  
+  public function render()
+  {
+    
+    return view('livewire.pages.admin.contents.product-content-resources.product-content-specification-crud')
+      ->title($this->title);
+  }
+
+  public function mount()
+  {
+
+    if ($this->id && $this->readonly) {
+      $this->title .= ' (Show)';
+      $this->show();
+    } else if ($this->id) {
+      $this->title .= ' (Edit)';
+      $this->edit($this->id);
+    } else {
+      $this->title .= ' (Create)';
+      $this->create();
+    }
+
+    $this->initialize();
+
+    $this->crudModal = false;
+  }
+
+  #[On('product-content-specification-created')] 
+  public function initialize()
+  {
+    $this->productContent = $this->parentModel::with([
+      'product',
+      'productContentSpecifications' => function ($q) {
+        $q->orderBy('product_content_specifications.ordinal', 'asc');
+      }
+    ])
+      ->findOrFail($this->id)
+      ->toArray();
+  }
+
+
+
+  
   public function create()
   {
     $this->productContentSpecificationId = null;
@@ -90,12 +131,16 @@ class ProductContentSpecificationCrud extends Component
         timeout: 3000,                      
         redirectTo: null                    
     );
+    $this->crudModal = false;
 
-    $this->redirect($this->redirectUrl . "/edit/{$this->id}", true);
+    $this->dispatch('product-content-specification-created'); 
+    // $this->redirect($this->redirectUrl . "/edit/{$this->id}", true);
   }
 
-  public function edit()
+  public function edit($masterId)
   {
+    $this->masterId = $masterId;
+
     $this->productContent = $this->model::with([
       'product',
       'productContentSpecifications' => function ($q) {

@@ -78,9 +78,9 @@
     <x-form wire:submit="{{ $masterId ? 'update' : 'store' }}" wire:confirm="Are you sure?">
 
       <x-input wire:model="masterForm.name" label="Name" placeholder="Name" :readonly="$isReadonly" />
-
       <x-file wire:model="masterForm.thumbnail_url" label="Thumbnail" accept="image/*" :disabled="$isDisabled" />
-      <x-image-preview :imageUrl="$masterForm?->thumbnail_url" />
+      {{-- <x-image-preview :imageUrl="$masterForm?->thumbnail_url" /> --}}
+      <img src="{{ url($masterForm?->thumbnail_url) }}" alt="Product Display Image {{ $index + 1 }}" class="w-50">
         
 
       <x-file wire:model="masterForm.video_url" label="Video" accept="video/*" :disabled="$isDisabled" />

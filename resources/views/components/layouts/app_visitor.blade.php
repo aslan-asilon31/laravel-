@@ -28,6 +28,34 @@
           -1px 1px 0 white,
           1px 1px 0 white; /* Outline putih */
   }
+
+  .loading-indicator {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .spinner {
+      border: 8px solid rgba(0, 0, 0, 0.1);
+      border-top: 8px solid #3498db;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
   </style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -45,21 +73,35 @@
 </head>
 
 {{-- <body class=""> --}}
-<body class="" x-data="{ isLoading: true }" x-init="setTimeout(() => isLoading = false, 2000)">
-  <div class="loading-indicator" :class="{ 'hidden': !isLoading }" role="status">
-  </div>
+<body class="" >
+
+
+
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
+  <div x-data="{ isLoading: true }" x-init="setTimeout(() => isLoading = false, 200)">
+    <div class="loading-indicator" x-show="isLoading" role="status">
+      <div class="spinner"></div>
+    </div>
 
     <livewire:pages.visitor.partials.header />
     
-    <div class="container mx-auto mt-24">
-
+    <div class="container mx-auto mt-24" x-show="!isLoading">
       {{ $slot }}
+    </div>
+  </div>
 
+    
+  <div x-data="{ isLoading: true }" x-init="setTimeout(() => isLoading = false, 200)">
+    <div class="loading-indicator" x-show="isLoading" role="status">
+      <div class="spinner"></div>
     </div>
 
     <livewire:pages.visitor.partials.footer/>
+  </div>
 
+  
     <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>

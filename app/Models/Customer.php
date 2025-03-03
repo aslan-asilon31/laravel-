@@ -31,4 +31,9 @@ class Customer extends Model
     return $date->format('Y-m-d H:i:s');
   }
 
+  public function sales_order()
+  {
+    return $this->hasOne(SalesOrder::class, 'customer_id'); 
+  }
+
 }

@@ -76,7 +76,6 @@ class HomeList extends Component
     #[On('productWasDeleted')] 
     public function mount() 
     {  
-        dd(session()->all());
         $session_id = session('session_id');
         $session_id = Session::getId();
         session(['session_id' => $session_id]);

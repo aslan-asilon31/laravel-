@@ -55,6 +55,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/product-brands/edit/{id}', \App\Livewire\Pages\Admin\Contents\ProductBrandResources\ProductBrandCrud::class)->name('product_brands.edit');
     Route::get('/product-brands/show/{id}/{readonly}', \App\Livewire\Pages\Admin\Contents\ProductBrandResources\ProductBrandCrud::class)->where('readonly', 'readonly')->name('product_brands.show');
 
+
     Route::get('/product-category-seconds', \App\Livewire\Pages\Admin\Contents\ProductCategorySecondResources\ProductCategorySecondList::class)->name('product_category_seconds.list');
     Route::get('/product-category-seconds/create', \App\Livewire\Pages\Admin\Contents\ProductCategorySecondResources\ProductCategorySecondCrud::class)->name('product_category_seconds.create');
     Route::get('/product-category-seconds/edit/{id}', \App\Livewire\Pages\Admin\Contents\ProductCategorySecondResources\ProductCategorySecondCrud::class)->name('product_category_seconds.edit');

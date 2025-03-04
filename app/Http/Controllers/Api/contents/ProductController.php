@@ -18,6 +18,7 @@ class ProductController extends Controller
         return response()->json([
           'success' => true,
           'data' => $records,
+          'csrf_token' => csrf_token(),
         ], Response::HTTP_OK);
  
     }

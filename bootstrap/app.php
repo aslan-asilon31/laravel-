@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(except: [
             'stripe/*',
+            'api/*',
             'http://localhost:3000/product/store',
             'http://localhost:3000/product/*',
             'http://localhost:5173/product/brands',

@@ -46,12 +46,13 @@ use App\Http\Controllers\Api\CompanyController;
 
 
     Route::get('api/product-brands', [ProductBrandController::class,'index']);
-    Route::get('api/product-brands', [ProductBrandController::class,'index'])->name('product_brands.list');
-    Route::post('api/product-brands/store', [ProductBrandController::class,'store'])->name('products.store');
+    Route::get('api/product-brands/{id}', [ProductBrandController::class,'fetch_by_id'])->name('product_brands.list');
+    Route::post('api/product-brands/store', [ProductBrandController::class,'store'])->name('product_brands.store');
+    Route::post('api/product-brands/update/{id}', [ProductBrandController::class,'update'])->name('product_brands.update');
     Route::get('api/product-brands/create', [ProductBrandController::class,'index'])->name('product_brands.create');
     Route::get('api/product-brands/edit/{id}', [ProductBrandController::class,'index'])->name('product_brands.edit');
     Route::get('api/product-brands/show/{id}/{readonly}', [ProductBrandController::class,'index'])->where('readonly', 'readonly')->name('product_brands.show');
-    
+    Route::delete('api/product-brands/delete/{id}', [ProductBrandController::class, 'destroy'])->name('product_brands.delete'); // Route DELETE
 
 
 
@@ -148,7 +149,7 @@ use App\Http\Controllers\Api\CompanyController;
     Route::get('api/category-recommendations/show/{id}/{readonly}', [CategoryRecommendationController::class,'index'])->where('readonly', 'readonly')->name('category_recommendations.show');
 
 
-// });
+
 
 
 Route::post('api/register', [\App\Http\Controllers\Api\AuthController::class, 'register']);

@@ -45,6 +45,18 @@ class ProductBrandController extends Controller
         ], Response::HTTP_OK);
     }
 
+    public function fetch_by_id(string $id)
+    {
+        $brand = ProductBrand::where('id',$id)->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $brand,
+            'csrf_token' => csrf_token(),
+        ], Response::HTTP_OK);
+
+    }
+
     // public function index(Request $request)
     // {
     //     DB::beginTransaction();
@@ -98,14 +110,16 @@ class ProductBrandController extends Controller
 
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
+                'name' => 'nullable',
+                'slug' => 'nullable',
+                // 'name' => 'required|string|max:255',
+                // 'slug' => 'required|string|max:255',
             ]);
-
-            $product = Product::create($validated);
+            $product = ProductBrand::create($validated);
 
             DB::commit();
             return response()->json([
-                "message" => "Product created successfully",
+                "message" => "Product Brand created successfully",
                 "data" => $product
             ], 201); 
             
@@ -129,7 +143,7 @@ class ProductBrandController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 "message" => "failed",
-                "error" => "Product not found"
+                "error" => "Product Brand not found"
             ], 404);
         }
     }
@@ -142,14 +156,15 @@ class ProductBrandController extends Controller
             // Validate request data
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
+                'slug' => 'required|string|max:255',
             ]);
 
-            $product = Product::findOrFail($id);
+            $product = ProductBrand::findOrFail($id);
             $product->update($validated);
 
             DB::commit();
             return response()->json([
-                "message" => "Product updated successfully",
+                "message" => "Product Brand updated successfully",
                 "data" => $product
             ]);
             
@@ -167,7 +182,7 @@ class ProductBrandController extends Controller
         DB::beginTransaction();
 
         try {
-            $product = Product::findOrFail($id);
+            $product = ProductBrand::findOrFail($id);
             $product->delete();
 
             DB::commit();

@@ -45,6 +45,49 @@ class ProductBrandController extends Controller
         ], Response::HTTP_OK);
     }
 
+    public function fetchAdvanceSearch(Request $request)
+    {
+        // Retrieve the request parameters
+        $filter = $request->input('filter');
+        $createdBy = $request->input('created_by');
+        $page = $request->input('page', 1); // Default to page 1 if not provided
+        $sort = $request->input('sort', 'newest'); // Default sort option
+        $desc = $request->input('desc', false); // Default to ascending order
+    
+        // Build the query
+        $query = ProductBrand::query();
+    
+        // Apply filters
+        if ($filter) {
+            $query->where('name', 'LIKE', '%' . $filter . '%');
+        }
+    
+        if ($createdBy) {
+            $query->where('created_by', $createdBy);
+        }
+    
+        // Apply sorting
+        if ($sort === 'newest') {
+            $query->orderBy('created_at', $desc ? 'desc' : 'asc');
+        } elseif ($sort === 'oldest') {
+            $query->orderBy('created_at', $desc ? 'asc' : 'desc');
+        } elseif ($sort === 'price') {
+            $query->orderBy('price', $desc ? 'desc' : 'asc');
+        }
+    
+        // Paginate the results
+        $perPage = 9; // Set the number of items per page
+        $brands = $query->paginate($perPage, ['*'], 'page', $page);
+    
+        // Return the paginated results
+        return response()->json([
+            'success' => true,
+            'data' => $brands,
+            'csrf_token' => csrf_token(),
+        ], Response::HTTP_OK);
+
+    }
+    
     public function fetch_by_id(string $id)
     {
         $brand = ProductBrand::where('id',$id)->first();

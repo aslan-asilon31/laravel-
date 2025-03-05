@@ -9,7 +9,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class ProductBrand extends Model
 {
-  use HasFactory, HasUuids,HasApiTokens;
+  use HasFactory, HasUuids, HasApiTokens;
 
   public function newUniqueId(): string
   {

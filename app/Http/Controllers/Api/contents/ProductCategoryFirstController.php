@@ -18,6 +18,7 @@ use App\Models\ProductContentReviewVideo;
 use App\Models\MetaPropertyGroup;
 use App\Models\MetaProperty;
 use App\Models\ProductBrand;
+use Illuminate\Http\Response;
 use App\Models\CategoryRecommendation;
 use App\Models\Marketplace;
 use App\Models\Employee;
@@ -27,6 +28,8 @@ use App\Models\Permission;
 use App\Models\Customer;
 use App\Models\ProductSales;
 use App\Models\SalesOrder;
+use App\Models\ProductCategoryFirst;
+
 use Illuminate\Support\Facades\DB;
 
 class ProductCategoryFirstController extends Controller
@@ -34,10 +37,13 @@ class ProductCategoryFirstController extends Controller
 
     public function index(Request $request)
     {
-    
-            $productCategories = ProductCategoryFirst::get();
 
-            return response()->json($productCategories, 200); 
+        $records = ProductCategoryFirst::orderBy('created_at')->paginate(20);
+        return response()->json([
+          'success' => true,
+          'data' => $records,
+          'csrf_token' => csrf_token(),
+        ], Response::HTTP_OK);
 
     }
 
@@ -54,7 +60,7 @@ class ProductCategoryFirstController extends Controller
     //             return response()->json([
     //                 "message" => "failed",
     //                 "error" => "No product Category 1 found"
-    //             ], 404); 
+    //             ], 404);
     //         }
 
     //         DB::commit();
@@ -74,16 +80,16 @@ class ProductCategoryFirstController extends Controller
     //             "message" => "success!"
     //         ];
     //         return response()->json($pass);
-    
+
     //     } catch (\Exception $e) {
 
-    //         \Log::error('Data failed : ' . $e->getMessage());  
+    //         \Log::error('Data failed : ' . $e->getMessage());
 
     //         DB::rollBack();
     //         return response()->json([
     //             "message" => "failed",
     //             "error" => $e->getMessage()
-    //         ], 500); 
+    //         ], 500);
     //     }
 
     // }
@@ -106,8 +112,8 @@ class ProductCategoryFirstController extends Controller
             return response()->json([
                 "message" => "Product created successfully",
                 "data" => $product
-            ], 201); 
-            
+            ], 201);
+
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -151,7 +157,7 @@ class ProductCategoryFirstController extends Controller
                 "message" => "Product updated successfully",
                 "data" => $product
             ]);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -173,7 +179,7 @@ class ProductCategoryFirstController extends Controller
             return response()->json([
                 "message" => "Product deleted successfully"
             ]);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([

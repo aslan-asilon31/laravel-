@@ -4,10 +4,12 @@ use Illuminate\Support\Facades\Route;
 
 
 
-use App\Http\Controllers\Api\UserController;  
-use App\Http\Controllers\Api\AuthController;  
-use App\Http\Controllers\Api\contents\ProductController;  
-use App\Http\Controllers\Api\contents\ProductCategoryFirstController;  
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\contents\ProductController;
+use App\Http\Controllers\Api\contents\ProductCategoryFirstController;
+use App\Http\Controllers\Api\contents\ProductCategorySecondController;
+
 use App\Http\Controllers\Api\generals\MarketplaceController;
 use App\Http\Controllers\Api\generals\EmployeeController;
 use App\Http\Controllers\Api\generals\PositionController;
@@ -76,11 +78,18 @@ use App\Http\Controllers\Api\CompanyController;
     Route::get('api/product-content-features/edit/{id}', [ProductContentFeatureController::class,'']);
     Route::get('api/product-content-qnas/edit/{id}', [ProductContentQnaController::class,'']);
     Route::get('api/product-content-reviews/edit/{id}', [ProductContentReviewController::class,'']);
-   
-    Route::get('api/product-category-firsts', [ProductCategoryFirstController::class,''])->name('product_category_firsts.list');
-    Route::get('api/product-category-firsts/create', [ProductCategoryFirstController::class,''])->name('product_category_firsts.create');
-    Route::get('api/product-category-firsts/edit/{id}', [ProductCategoryFirstController::class,''])->name('product_category_firsts.edit');
-    Route::get('api/product-category-firsts/show/{id}/{readonly}', [ProductCategoryFirstController::class,''])->where('readonly', 'readonly')->name('product_category_firsts.show');
+
+
+    Route::get('api/product-category-firsts', [ProductCategoryFirstController::class,'index']);
+    Route::get('api/product-category-firsts/{id}', [ProductCategoryFirstController::class,'fetch_by_id'])->name('product_category_firsts.list');
+    Route::post('api/product-category-firsts/store', [ProductCategoryFirstController::class,'store'])->name('product_category_firsts.store');
+    Route::post('api/product-category-firsts/update/{id}', [ProductCategoryFirstController::class,'update'])->name('product_category_firsts.update');
+    Route::get('api/product-category-firsts/create', [ProductCategoryFirstController::class,'index'])->name('product_category_firsts.create');
+    Route::get('api/product-category-firsts/edit/{id}', [ProductCategoryFirstController::class,'index'])->name('product_category_firsts.edit');
+    Route::get('api/product-category-firsts/show/{id}/{readonly}', [ProductCategoryFirstController::class,'index'])->where('readonly', 'readonly')->name('product_category_firsts.show');
+    Route::delete('api/product-category-firsts/delete/{id}', [ProductCategoryFirstController::class, 'destroy'])->name('product_category_firsts.delete'); // Route DELETE
+    Route::get('api/product-category-firsts-advanced/{slug}', [ProductCategoryFirstController::class, 'product_category_firsts.fetchAdvanceSearch']);
+
 
     Route::get('api/product-category-seconds', [ProductCategorySecondController::class,''])->name('product_category_seconds.list');
     Route::get('api/product-category-seconds/create', [ProductCategorySecondController::class,''])->name('product_category_seconds.create');
@@ -100,7 +109,7 @@ use App\Http\Controllers\Api\CompanyController;
     Route::get('api/employees/create', [EmployeeController::class,'index']);
     Route::get('api/employees/edit/{id}', [EmployeeController::class,'index'])->name('employees.edit');
     Route::get('api/employees/show/{id}/{readonly}', [EmployeeController::class,'index'])->where('readonly', 'readonly')->name('employees.show');
-    
+
     Route::get('api/employee-accounts', [EmployeeAccountController::class,'index']);
     Route::get('api/employee-accounts/create', [EmployeeAccountController::class,'index']);
     Route::get('api/employee-accounts/edit/{id}', [EmployeeAccountController::class,'index'])->name('employee-accounts.edit');
@@ -121,7 +130,7 @@ use App\Http\Controllers\Api\CompanyController;
     Route::get('api/permissions/edit/{id}', [PermissionController::class,'index'])->name('pages.edit');
     Route::get('api/permissions/show/{id}/{readonly}', [PermissionController::class,'index'])->where('readonly', 'readonly')->name('pages.show');
 
-    // Sales 
+    // Sales
     Route::get('api/customers', [CustomerController::class,'index']);
     Route::get('api/customers/create', [CustomerController::class,'index']);
     Route::get('api/customers/edit/{id}', [CustomerController::class,'index'])->name('customer.edit');
@@ -135,7 +144,7 @@ use App\Http\Controllers\Api\CompanyController;
     // Route::get('api/sales-orders/update/{id}', \App\Livewire\Pages\Admin\Sales\SalesOrderResources\SalesOrderController::class,'index')->name('sales-order.edit');
     // Route::get('api/sales-orders/update/{id}/{slug}', \App\Livewire\Pages\Admin\Sales\SalesOrderResources\SalesOrderController::class,'index')->name('sales-order.edit');
     Route::get('api/sales-orders/update/{id}', [SalesOrderController::class,'index'])->name('sales-order.edit');
-    
+
     Route::get('api/sales-orders/edit/{id}', [SalesOrderController::class,'index'])->name('sales-order.edit');
 
     Route::get('api/sales-orders/show/{id}/{readonly}', [SalesOrderController::class,'index'])->where('readonly', 'readonly')->name('sales-order.show');

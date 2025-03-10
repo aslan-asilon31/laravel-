@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\On;
 use App\Models\ProductContent;
 
-class ProductCartLivewire extends Component  
-{  
+class ProductCartLivewire extends Component
+{
     protected $listeners = ['productRefresh' => 'mount'];
     protected $listeners1 = ['productDeleteRefresh' => 'mount'];
 
@@ -23,9 +23,9 @@ class ProductCartLivewire extends Component
     public $amount;
     public $title = 'Product Cart Livewire';
 
-    #[On('productRefresh')] 
-    public function mount()  
-    {  
+    #[On('productRefresh')]
+    public function mount()
+    {
         $this->products = session('products', []);
 
         $this->products5 =  ProductContent::query()
@@ -50,9 +50,9 @@ class ProductCartLivewire extends Component
             'product_contents.updated_at',
             'product_contents.is_activated',
         ])->get();
-      
 
-    }  
+
+    }
 
     public function editCart($id)
     {
@@ -92,35 +92,57 @@ class ProductCartLivewire extends Component
     }
 
 
-    public function render()  
-    {  
+    public function render()
+    {
         return view('livewire.product-cart-livewire')
             ->layout('components.layouts.app_visitor')
-            ->title($this->title);  
-    }  
-    
-    public function storeCart()  
+            ->title($this->title);
+    }
+
+    public function storeCart($id)
     {
-        $id = $this->productId; // Mengambil ID produk dari properti
-    
-        $this->validate([
-            'name' => 'required',
-        ]);
+        // Ambil data produk berdasarkan ID
+        $newProducts = ProductContent::query()
+            ->join('products', 'product_contents.product_id', '=', 'products.id') // Menggunakan '=' untuk join
+            ->select([
+                'product_contents.id AS product_content_id',
+                'products.id AS products_id',
+                'products.name AS products_name',
+                'products.selling_price AS product_selling_price',
+                'products.discount_value AS product_discount_value',
+                'products.nett_price AS product_nett_price',
+                'products.weight AS product_weight', // Menyelesaikan kolom yang terputus
+                'products.sku AS products_sku',
+            ])
+            ->where('products.id', $id) // Menambahkan kondisi untuk mengambil produk berdasarkan ID
+        ->first(); // Mengambil satu produk
 
-        $products = session('products', []);
-        $id = count($products) > 0 ? max(array_column($products, 'id')) + 1 : 1;
 
-        $products[] = [
-            'id' => $id,
-            'amount' => $this->amount,
-        ];
+        // Jika produk ditemukan, simpan ke dalam keranjang
+        if ($newProducts) {
+            // Logika untuk menyimpan produk ke dalam keranjang
+            $products = session('products', []);
+            $products[] = [
+                'id' => $newProducts->products_id,
+                'name' => $newProducts->products_name,
+                'selling_price' => $newProducts->products_selling_price,
+                'discount_value' => $newProducts->products_discount_value,
 
-        session(['products' => $products]);
+                'nett_price' => $newProducts->products_nett_price,
+                'qty' => 1,
+                'amount' => $newProducts->products_nett_price,
+                'weight' => $newProducts->product_weight,
+                'sku' => $newProducts->products_sku,
+            ];
 
-        // Refresh the products list
-        $this->products = $products;
+            // Simpan kembali ke session
+            session(['products' => $products]);
 
-        $this->dispatch('productWasAdded');
+            $this->dispatch('productWasAdded');
+        } else {
+            // Jika produk tidak ditemukan, Anda bisa menambahkan logika penanganan error
+            session()->flash('error', 'Product not found.');
+        }
     }
 
     public function isProductInCart($productId)

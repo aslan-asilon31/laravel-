@@ -4,18 +4,18 @@ namespace App\Livewire\Pages\Visitor\HomeResources;
 
 use App\Models\Marketplace;
 use Livewire\Component;
-use App\Models\ProductBrand;   
-use App\Models\Product;   
-use App\Models\ProductContent;   
+use App\Models\ProductBrand;
+use App\Models\Product;
+use App\Models\ProductContent;
 use App\Models\ProductCategoryFirst;
-use App\Models\ProductCategorySecond;  
-use Illuminate\Support\Facades\DB; 
+use App\Models\ProductCategorySecond;
+use Illuminate\Support\Facades\DB;
 
-use App\Models\SalesCart;  
-use App\Models\SalesCartDetail; 
-use Illuminate\Support\Facades\Session; 
+use App\Models\SalesCart;
+use App\Models\SalesCartDetail;
+use Illuminate\Support\Facades\Session;
 use App\Helpers\Cart\Cart;
-use Livewire\Attributes\On; 
+use Livewire\Attributes\On;
 
 class HomeList extends Component
 {
@@ -23,41 +23,41 @@ class HomeList extends Component
 
     use \Mary\Traits\Toast;
 
-    public string $title = 'Home';  
+    public string $title = 'Home';
     public string $url = '/home';
-    public $product_category_firsts; 
-    public $categories; 
-    public $marketplaces;   
+    public $product_category_firsts;
+    public $categories;
+    public $marketplaces;
     public $isLoading = false;
 
-    public $product_category_second;   
-    public $product_brands = []; 
+    public $product_category_second;
+    public $product_brands = [];
 
-    public $product_brand_lists;   
-    public $product_contents  = []; 
-    public $productrecoms  = [];   
+    public $product_brand_lists;
+    public $product_contents  = [];
+    public $productrecoms  = [];
 
-    public $product_content = [];   
-    public $product_lists;   
+    public $product_content = [];
+    public $product_lists;
     public $product;
-    public $products5; 
+    public $products5;
 
     public $product_detail = [];
 
-    public $brands = [];  
-    public $cartItems;  
-    public $cartItemRes;  
-    public $index = 0;  
-    public $sessionId;  
-    public $productId;  
+    public $brands = [];
+    public $cartItems;
+    public $cartItemRes;
+    public $index = 0;
+    public $sessionId;
+    public $productId;
 
 
-    public function rules()  
-    {  
-        return [  
-            'cartItems.*.qty' => 'required|integer|min:1', 
-        ];  
-    }  
+    public function rules()
+    {
+        return [
+            'cartItems.*.qty' => 'required|integer|min:1',
+        ];
+    }
 
     public function productDetail($product_id)
     {
@@ -72,10 +72,10 @@ class HomeList extends Component
         ->title($this->title);
     }
 
-    #[On('productWasAdded')] 
-    #[On('productWasDeleted')] 
-    public function mount() 
-    {  
+    #[On('productWasAdded')]
+    #[On('productWasDeleted')]
+    public function mount()
+    {
         $session_id = session('session_id');
         $session_id = Session::getId();
         session(['session_id' => $session_id]);
@@ -109,7 +109,7 @@ class HomeList extends Component
 
         $this->productrecoms =  ProductContent::query()
           ->join('products', 'product_contents.product_id', 'products.id')
-          ->join('product_brands', 'products.product_brand_id', '=', 'product_brands.id') 
+          ->join('product_brands', 'products.product_brand_id', '=', 'product_brands.id')
           ->select([
             'product_contents.id',
             'products.id AS products_id',
@@ -178,25 +178,25 @@ class HomeList extends Component
             'marketplaces.is_activated',
         ])->where('marketplaces.is_activated', 1)->get();
 
-        $this->product_brand_lists = ProductBrand::query()  
-        ->with(['products' => function ($query) {  
-            $query->take(5); // Ambil maksimal 5 produk untuk setiap brand  
-        }])  
-        ->inRandomOrder()  
-        ->take(2)  
+        $this->product_brand_lists = ProductBrand::query()
+        ->with(['products' => function ($query) {
+            $query->take(5); // Ambil maksimal 5 produk untuk setiap brand
+        }])
+        ->inRandomOrder()
+        ->take(2)
         ->get();
 
         $this->calculateTotal();
 
-    }  
+    }
 
 
-    public function addToCart($productId)  
-    { 
-        // $sessionId = Session::getId(); 
+    public function addToCart($productId)
+    {
+        // $sessionId = Session::getId();
         $this->isLoading = true;
         $id = $this->productId;
-        
+
         $products = session('products', []);
         $id = count($products) > 0 ? max(array_column($products, 'id')) + 1 : 1;
 
@@ -213,12 +213,12 @@ class HomeList extends Component
         $this->dispatch('productWasAdded');
 
 
-        if (!DB::table('sessions')->where('id', $sessionId)->exists()) {  
-            DB::table('sessions')->insert([  
-                'id' => $sessionId,  
-                'payload' => 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiNmR2WThQaWRFY1hDVTZDaTN4TjJQbjE1TFNVV2hQSHRBQkNKbENCSSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==',  
-                'last_activity' => time(),  
-            ]);  
+        if (!DB::table('sessions')->where('id', $sessionId)->exists()) {
+            DB::table('sessions')->insert([
+                'id' => $sessionId,
+                'payload' => 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiNmR2WThQaWRFY1hDVTZDaTN4TjJQbjE1TFNVV2hQSHRBQkNKbENCSSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==',
+                'last_activity' => time(),
+            ]);
         }
 
 
@@ -244,7 +244,7 @@ class HomeList extends Component
             'product_contents.updated_at',
             'product_contents.is_activated',
         ])->where('products.id', $productId)->get()->toArray();
-        
+
 
         // Ambil produk yang sudah ada di session
         $products = session('products', []);
@@ -256,70 +256,70 @@ class HomeList extends Component
         session(['products' => $products]);
 
 
-        $cart = SalesCart::firstOrCreate(  
-            ['session_id' => $sessionId],  
+        $cart = SalesCart::firstOrCreate(
+            ['session_id' => $sessionId],
             ['date' => now()] ,
             ['created_by' => auth()->user()->username ?? ''],
             ['updated_by' => auth()->user()->username ?? '']
-        );  
+        );
 
-        $cartDetail = SalesCartDetail::where([  
-            'sales_cart_id' => $cart->id,  
-            'product_id' => '9d921fc2-1ebf-46ba-a613-29cd580781e7',  
-            'selling_price' => $sellingPrice,  
-            'weight' => $weight,  
+        $cartDetail = SalesCartDetail::where([
+            'sales_cart_id' => $cart->id,
+            'product_id' => '9d921fc2-1ebf-46ba-a613-29cd580781e7',
+            'selling_price' => $sellingPrice,
+            'weight' => $weight,
         ])->first();
-  
-        if ($cartDetail) {  
-            // If the product is already in the cart, increase the quantity  
-            $cartDetail->qty += 1;  
-            $cartDetail->amount += $sellingPrice;  
-            $cartDetail->subtotal_weight += $weight;  
-        } else {  
-            // If the product is not in the cart, create a new cart detail  
-            $cartDetail = new SalesCartDetail([  
-                'sales_cart_id' => $cart->id,  
-                'product_id' => $productId,  
-                'selling_price' => $sellingPrice,  
-                'discount_persentage' => 0,  
-                'discount_value' => 0,  
-                'nett_price' => $sellingPrice,  
-                'qty' => 1,  
-                'amount' => $sellingPrice,  
-                'weight' => $weight,  
-                'subtotal_weight' => $weight,  
-            ]);  
-        }  
-  
-        // Save the cart detail  
-        $cartDetail->save();  
+
+        if ($cartDetail) {
+            // If the product is already in the cart, increase the quantity
+            $cartDetail->qty += 1;
+            $cartDetail->amount += $sellingPrice;
+            $cartDetail->subtotal_weight += $weight;
+        } else {
+            // If the product is not in the cart, create a new cart detail
+            $cartDetail = new SalesCartDetail([
+                'sales_cart_id' => $cart->id,
+                'product_id' => $productId,
+                'selling_price' => $sellingPrice,
+                'discount_persentage' => 0,
+                'discount_value' => 0,
+                'nett_price' => $sellingPrice,
+                'qty' => 1,
+                'amount' => $sellingPrice,
+                'weight' => $weight,
+                'subtotal_weight' => $weight,
+            ]);
+        }
+
+        // Save the cart detail
+        $cartDetail->save();
 
 
         $this->success('Produk ditambahkan ke keranjang!');
 
         // $this->emit('refreshCart', $cartDetail);
-        // Optionally, you can dispatch an event or flash a message  
-        session()->flash('message', 'Product added to cart successfully!');  
+        // Optionally, you can dispatch an event or flash a message
+        session()->flash('message', 'Product added to cart successfully!');
         $this->isLoading = false;
-    } 
+    }
 
     #[On('cart-created')]
-    public function loadCartItems($cartId)  
-    {  
-        
+    public function loadCartItems($cartId)
+    {
+
         $cart = SalesCart::where('session_id', $this->sessionId)->first();
-        if ($cart) {  
+        if ($cart) {
             $this->cartItems = $cart->details;
-        } else {  
-            $this->cartItems = [];  
-        }  
+        } else {
+            $this->cartItems = [];
+        }
     }
 
     // public function isProductInCart($productId)
     // {
     //     // Ambil produk dari session
     //     $products = session('products', []);
-    
+
     //     // Pastikan $products adalah array
     //     if (!is_array($products)) {
     //         return false;
@@ -329,7 +329,7 @@ class HomeList extends Component
 
     //         $this->cartItemRes =  ProductContent::query()
     //             ->join('products', 'product_contents.product_id', 'products.id')
-    //             ->join('product_brands', 'products.product_brand_id', '=', 'product_brands.id') 
+    //             ->join('product_brands', 'products.product_brand_id', '=', 'product_brands.id')
     //             ->select([
     //             'product_contents.id',
     //             'products.id AS products_id',
@@ -342,7 +342,7 @@ class HomeList extends Component
     //         return false;
     //     }
 
-    
+
     // }
 
     public function isProductInCart($productId)
@@ -368,25 +368,25 @@ class HomeList extends Component
     return false; // Produk tidak ditemukan di keranjang
 }
 
-  
-    public function updateCartItem($cartDetailId, $qty)  
-    {  
-        try {  
-            $cartDetail = SalesCartDetail::find($cartDetailId);  
-            if ($cartDetail) {  
-                $cartDetail->qty = $qty;  
-                $cartDetail->amount = $cartDetail->selling_price * $qty;  
-                $cartDetail->subtotal_weight = $cartDetail->weight * $qty;  
-                $cartDetail->save();  
-                $this->dispatch('cartUpdated');  
-            }  
-        } catch (\Exception $e) {  
-            session()->flash('error', 'Failed to update cart item: ' . $e->getMessage());  
-        }  
-    }  
-  
-    public function removeCartItem($cartDetailId)  
-    {  
+
+    public function updateCartItem($cartDetailId, $qty)
+    {
+        try {
+            $cartDetail = SalesCartDetail::find($cartDetailId);
+            if ($cartDetail) {
+                $cartDetail->qty = $qty;
+                $cartDetail->amount = $cartDetail->selling_price * $qty;
+                $cartDetail->subtotal_weight = $cartDetail->weight * $qty;
+                $cartDetail->save();
+                $this->dispatch('cartUpdated');
+            }
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to update cart item: ' . $e->getMessage());
+        }
+    }
+
+    public function removeCartItem($cartDetailId)
+    {
         $products = session('products', []);
 
         $updatedProducts = collect($products)
@@ -399,52 +399,52 @@ class HomeList extends Component
 
         return redirect()->route('cart-item')
             ->with('success', 'Produk berhasil dihapus.');
-    }  
-  
-    public function calculateTotal()  
-    {  
-        $total = 0;  
+    }
+
+    public function calculateTotal()
+    {
+        $total = 0;
         $this->cartItems = session('products', []);
 
-        foreach ($this->cartItems as $item) {  
-            $total += $item['amount'] ?? 0;  
-        } 
-        return $total;  
-    }  
-  
-    public function calculateDiscount()  
-    {  
-        // Example discount calculation (15% of total)  
-        $total = $this->calculateTotal();  
-        return $total * 0.11;  
-    }  
-  
-    public function calculateShipping()  
-    {  
-        // Example shipping cost  
-        return 30000;  
-    }  
-  
-    public function calculateVAT()  
-    {  
-        // Example VAT calculation (10% of total)  
-        $total = $this->calculateTotal();  
-        return $total * 0.1;  
-    }  
-  
-    public function calculateFinalTotal()  
-    {  
-        $total = $this->calculateTotal();  
-        $discount = $this->calculateDiscount();  
-        return $total - $discount;
-        // $shipping = $this->calculateShipping();  
-        // $vat = $this->calculateVAT();  
-        // return $total - $discount + $shipping + $vat;  
-    }  
+        foreach ($this->cartItems as $item) {
+            $total += $item['amount'] ?? 0;
+        }
+        return $total;
+    }
 
-    // public function storeCart($id)  
+    public function calculateDiscount()
+    {
+        // Example discount calculation (15% of total)
+        $total = $this->calculateTotal();
+        return $total * 0.11;
+    }
+
+    public function calculateShipping()
+    {
+        // Example shipping cost
+        return 30000;
+    }
+
+    public function calculateVAT()
+    {
+        // Example VAT calculation (10% of total)
+        $total = $this->calculateTotal();
+        return $total * 0.1;
+    }
+
+    public function calculateFinalTotal()
+    {
+        $total = $this->calculateTotal();
+        $discount = $this->calculateDiscount();
+        return $total - $discount;
+        // $shipping = $this->calculateShipping();
+        // $vat = $this->calculateVAT();
+        // return $total - $discount + $shipping + $vat;
+    }
+
+    // public function storeCart($id)
     // {
-        
+
 
     //     $newProducts =  ProductContent::query()
     //         ->join('products', 'product_contents.product_id', 'products.id')
@@ -468,9 +468,9 @@ class HomeList extends Component
     //         'product_contents.updated_at',
     //         'product_contents.is_activated',
     //     ])->where('products.id', $id)->first()->toArray();
-        
 
-        
+
+
     //     // $this->validate([
     //     //     'name' => 'required',
     //     //     'price' => 'required|numeric',
@@ -510,7 +510,7 @@ class HomeList extends Component
     //     $this->dispatch('productWasAdded');
     // }
 
-    public function storeCart($id)  
+    public function storeCart($id)
     {
         // Ambil data produk berdasarkan ID
         $newProducts = ProductContent::query()
@@ -537,9 +537,12 @@ class HomeList extends Component
                 'id' => $newProducts->products_id,
                 'name' => $newProducts->products_name,
                 'selling_price' => $newProducts->products_selling_price,
+                'discount_value' => $newProducts->products_discount_value,
+
                 'nett_price' => $newProducts->products_nett_price,
                 'qty' => 1,
                 'amount' => $newProducts->products_nett_price,
+                'weight' => $newProducts->product_weight,
                 'sku' => $newProducts->products_sku,
             ];
 

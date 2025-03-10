@@ -47,6 +47,7 @@ class ProductBrandController extends Controller
 
     public function fetchAdvanceSearch(Request $request)
     {
+
         // Retrieve the request parameters
         $filter = $request->input('filter');
         $createdBy = $request->input('created_by');
@@ -68,17 +69,16 @@ class ProductBrandController extends Controller
     
         // Apply sorting
         if ($sort === 'newest') {
-            $query->orderBy('created_at', $desc ? 'desc' : 'asc');
-        } elseif ($sort === 'oldest') {
-            $query->orderBy('created_at', $desc ? 'asc' : 'desc');
-        } elseif ($sort === 'price') {
-            $query->orderBy('price', $desc ? 'desc' : 'asc');
+            $query->orderBy('created_at','desc');
+        } else{
+            $query->orderBy('created_at','asc');
         }
     
         // Paginate the results
         $perPage = 9; // Set the number of items per page
         $brands = $query->paginate($perPage, ['*'], 'page', $page);
-    
+
+       
         // Return the paginated results
         return response()->json([
             'success' => true,

@@ -12,7 +12,6 @@ use App\Http\Controllers\Api\generals\EmployeeController;
 use App\Http\Controllers\Api\generals\PositionController;
 use App\Http\Controllers\Api\generals\PageController;
 use App\Http\Controllers\Api\generals\PermissionController;
-
 use App\Http\Controllers\Api\contents\MetaPropertyGroupController;
 use App\Http\Controllers\Api\contents\MetaPropertyController;
 use App\Http\Controllers\Api\contents\ProductBrandController;
@@ -31,13 +30,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::get('api/products/{id}', [ProductController::class,'fetchById'])->name('products.fetchById');
-Route::get('api/products', [ProductController::class,'index'])->name('products.list');
-Route::get('api/products/create', [ProductController::class,'index'])->name('products.create');
-Route::post('api/products/store', [ProductController::class,'store'])->name('products.store');
-Route::get('api/products/show/{id}/{readonly}', [ProductController::class,'index'])->where('readonly', 'readonly')->name('products.show');
-Route::put('api/products/update/{id}', [ProductController::class, 'update']);
-Route::delete('api/products/delete/{id}', [ProductController::class, 'destroy']);
+    Route::get('api/products/{id}', [ProductController::class,'fetchById'])->name('products.fetchById');
+    Route::get('api/products', [ProductController::class,'index'])->name('products.list');
+    Route::get('api/products/create', [ProductController::class,'index'])->name('products.create');
+    Route::post('api/products/store', [ProductController::class,'store'])->name('products.store');
+    Route::get('api/products/show/{id}/{readonly}', [ProductController::class,'index'])->where('readonly', 'readonly')->name('products.show');
+    Route::put('api/products/update/{id}', [ProductController::class, 'update']);
+    Route::delete('api/products/delete/{id}', [ProductController::class, 'destroy']);
 
 Route::get('api/settings', [SettingController::class,'index'])->name('settings.index');
 

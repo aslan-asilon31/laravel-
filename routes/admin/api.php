@@ -53,8 +53,7 @@ use App\Http\Controllers\Api\CompanyController;
     Route::get('api/product-brands/edit/{id}', [ProductBrandController::class,'index'])->name('product_brands.edit');
     Route::get('api/product-brands/show/{id}/{readonly}', [ProductBrandController::class,'index'])->where('readonly', 'readonly')->name('product_brands.show');
     Route::delete('api/product-brands/delete/{id}', [ProductBrandController::class, 'destroy'])->name('product_brands.delete'); // Route DELETE
-    Route::get('/product-brands-advanced/{slug}', [ProductBrandController::class, 'fetchAdvanceSearch']);
-
+    Route::get('api/product-brands-advanced', [ProductBrandController::class, 'fetchAdvanceSearch']);
 
     Route::get('api/product-contents/edit/{id}/metas', [ProductContentMetaController::class,'index']);
     Route::get('api/product-contents/edit/{id}/displays', [ProductContentDisplayController::class,'index']);
@@ -122,11 +121,12 @@ use App\Http\Controllers\Api\CompanyController;
     Route::get('api/permissions/show/{id}/{readonly}', [PermissionController::class,'index'])->where('readonly', 'readonly')->name('pages.show');
 
     // Sales 
-    Route::get('api/customers', [CustomerController::class,'index']);
-    Route::get('api/customers/create', [CustomerController::class,'index']);
-    Route::get('api/customers/edit/{id}', [CustomerController::class,'index'])->name('customer.edit');
-    Route::get('api/customers/show/{id}/{readonly}', [CustomerController::class,'index'])->where('readonly', 'readonly')->name('customer.show');
-    Route::post('api/customers/store', [CustomerController::class,'store'])->name('customer.store');
+    // Route::get('api/customers', [CustomerController::class,'index']);
+    // Route::get('api/customers/create', [CustomerController::class,'index']);
+    // Route::get('api/customers/edit/{id}', [CustomerController::class,'index'])->name('customer.edit');
+    // Route::get('api/customers/show/{id}/{readonly}', [CustomerController::class,'index'])->where('readonly', 'readonly')->name('customer.show');
+    // Route::post('api/customers/store', [CustomerController::class,'store'])->name('customer.store');
+
 
 
     Route::get('api/sales-orders', [SalesOrderController::class,'index']);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\sales;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Http\Response;
 use App\Models\ProductContent;
 use App\Models\ProductContentDisplay;
 use App\Models\ProductContentFeature;
@@ -32,68 +33,92 @@ use Illuminate\Support\Facades\DB;
 class CustomerController extends Controller
 {
 
+
     public function index(Request $request)
     {
-        DB::beginTransaction();
+        $records = Customer::orderBy('created_at', 'desc')->paginate(20);
+        return response()->json([
+          'success' => true,
+          'data' => $records,
+          'csrf_token' => csrf_token(),
+        ], Response::HTTP_OK);
+    }
 
-        try {
-            $products = Product::with('productContent')->get();
+    public function fetchAdvanceSearch(Request $request)
+    {
 
-            if ($products->isEmpty()) {
-
-                DB::rollBack();
-                return response()->json([
-                    "message" => "failed",
-                    "error" => "No products found"
-                ], 404); 
-            }
-
-            DB::commit();
-
-            $pass = [
-                "data" => $products,
-                "links" => [
-                    "first" => "http://site.test/api/v1/post?page=1",
-                    "last" => "http://site.test/api/v1/post?page=8",
-                    "prev" => null,
-                    "next" => "http://site.test/api/v1/post?page=2"
-                ],
-                "meta" => [
-                    "total" => $products->count(),
-                    "per_page" => 15
-                ],
-                "message" => "success!"
-            ];
-            return response()->json($pass);
+        // Retrieve the request parameters
+        $filter = $request->input('filter');
+        $createdBy = $request->input('created_by');
+        $page = $request->input('page', 1); // Default to page 1 if not provided
+        $sort = $request->input('sort', 'newest'); // Default sort option
+        $desc = $request->input('desc', false); // Default to ascending order
     
-        } catch (\Exception $e) {
-
-            \Log::error('Data failed : ' . $e->getMessage());  
-
-            DB::rollBack();
-            return response()->json([
-                "message" => "failed",
-                "error" => $e->getMessage()
-            ], 500); 
+        // Build the query
+        $query = Customer::query();
+    
+        // Apply filters
+        if ($filter) {
+            $query->where('first_name', 'LIKE', '%' . $filter . '%');
         }
+    
+        if ($createdBy) {
+            $query->where('created_by', $createdBy);
+        }
+    
+        // Apply sorting
+        if ($sort === 'newest') {
+            $query->orderBy('created_at','desc');
+        } else{
+            $query->orderBy('created_at','asc');
+        }
+    
+        // Paginate the results
+        $perPage = 9; // Set the number of items per page
+        $brands = $query->paginate($perPage, ['*'], 'page', $page);
+
+       
+        // Return the paginated results
+        return response()->json([
+            'success' => true,
+            'data' => $brands,
+            'csrf_token' => csrf_token(),
+        ], Response::HTTP_OK);
+
+    }
+    
+    public function fetch_by_id(string $id)
+    {
+        $brand = Customer::where('id',$id)->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $brand,
+            'csrf_token' => csrf_token(),
+        ], Response::HTTP_OK);
 
     }
 
+
     public function store(Request $request)
     {
+        dd($request);
         DB::beginTransaction();
 
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
+                'first_name' => 'nullable',
+                'last_name' => 'nullable',
+                'phone' => 'nullable',
+                'email' => 'nullable',
+                'is_activated' => 'nullable',
             ]);
-
-            $product = Product::create($validated);
+            $customer = Customer::create($validated);
 
             DB::commit();
             return response()->json([
-                "message" => "Product created successfully",
-                "data" => $product
+                "message" => "Product Brand created successfully",
+                "data" => $customer
             ], 201); 
             
         } catch (\Exception $e) {
@@ -108,15 +133,15 @@ class CustomerController extends Controller
     public function show(string $id)
     {
         try {
-            $product = Product::with('productContent')->findOrFail($id);
+            $customer = Product::with('productContent')->findOrFail($id);
             return response()->json([
                 "message" => "success",
-                "data" => $product
+                "data" => $customer
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 "message" => "failed",
-                "error" => "Product not found"
+                "error" => "Product Brand not found"
             ], 404);
         }
     }
@@ -128,16 +153,20 @@ class CustomerController extends Controller
         try {
             // Validate request data
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:customers,email',
+                'phone' => 'required|string',
+                // 'phone' => 'required|string|regex:/^\+?[0-9]{10,15}$/',
             ]);
 
-            $product = Product::findOrFail($id);
-            $product->update($validated);
+            $customer = Customer::findOrFail($id);
+            $customer->update($validated);
 
             DB::commit();
             return response()->json([
-                "message" => "Product updated successfully",
-                "data" => $product
+                "message" => "Product Brand updated successfully",
+                "data" => $customer
             ]);
             
         } catch (\Exception $e) {
@@ -154,8 +183,8 @@ class CustomerController extends Controller
         DB::beginTransaction();
 
         try {
-            $product = Product::findOrFail($id);
-            $product->delete();
+            $customer = Customer::findOrFail($id);
+            $customer->delete();
 
             DB::commit();
             return response()->json([

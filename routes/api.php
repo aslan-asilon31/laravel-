@@ -53,3 +53,15 @@ Route::get('api/product-category-firsts-advanced/{slug}', [ProductCategoryFirstC
 
 
 
+Route::get('api/product-contents', [ProductContentController::class,'index']);
+Route::get('api/product-contents/{id}', [ProductContentController::class,'fetch_by_id'])->name('product_contents.list');
+Route::post('api/product-contents/store', [ProductContentController::class,'store'])->name('product_contents.store');
+Route::post('api/product-contents/update/{id}', [ProductContentController::class,'update'])->name('product_contents.update');
+Route::get('api/product-contents/create', [ProductContentController::class,'index'])->name('product_contents.create');
+Route::get('api/product-contents/edit/{id}', [ProductContentController::class,'index'])->name('product_contents.edit');
+Route::get('api/product-contents/show/{id}/{readonly}', [ProductContentController::class,'index'])->where('readonly', 'readonly')->name('product_contents.show');
+Route::delete('api/product-contents/delete/{id}', [ProductContentController::class, 'destroy'])->name('product_contents.delete'); // Route DELETE
+Route::get('api/product-contents-advanced/{slug}', [ProductContentController::class, 'product_contents.fetchAdvanceSearch']);
+
+
+

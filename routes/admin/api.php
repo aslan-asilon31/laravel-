@@ -132,8 +132,9 @@ use App\Http\Controllers\Api\CompanyController;
     // Sales
     Route::get('api/customers', [CustomerController::class,'index']);
     Route::get('api/customers/create', [CustomerController::class,'index']);
-    Route::get('api/customers/edit/{id}', [CustomerController::class,'index'])->name('customer.edit');
+    Route::get('api/customers/edit/{id}', [CustomerController::class,'edit'])->name('customer.edit');
     Route::get('api/customers/show/{id}/{readonly}', [CustomerController::class,'index'])->where('readonly', 'readonly')->name('customer.show');
+    Route::put('api/customers/update/{id}', [CustomerController::class,'update'])->name('customer.update');
     Route::post('api/customers/store', [CustomerController::class,'store'])->name('customer.store');
 
 

@@ -36,7 +36,7 @@ class CustomerController extends Controller
 
     public function index(Request $request)
     {
-        $records = Customer::orderBy('created_at', 'desc')->paginate(20);
+        $records = Customer::orderBy('created_at', 'desc')->paginate($request->input('per_page') ?? 20);
         return response()->json([
           'success' => true,
           'data' => $records,
@@ -98,37 +98,36 @@ class CustomerController extends Controller
         ], Response::HTTP_OK);
 
     }
+    
+    public function edit(string $id)
+    {
+
+        $records = Customer::where('id',$id)->first();
+        return response()->json([
+          'success' => true,
+          'data' => $records,
+          'csrf_token' => csrf_token(),
+        ], Response::HTTP_OK);
+
+    }
 
 
     public function store(Request $request)
     {
-        dd($request);
-        DB::beginTransaction();
-
-        try {
-            $validated = $request->validate([
-                'first_name' => 'nullable',
-                'last_name' => 'nullable',
-                'phone' => 'nullable',
-                'email' => 'nullable',
-                'is_activated' => 'nullable',
-            ]);
-            $customer = Customer::create($validated);
-
-            DB::commit();
-            return response()->json([
-                "message" => "Product Brand created successfully",
-                "data" => $customer
-            ], 201); 
-            
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                "message" => "failed",
-                "error" => $e->getMessage()
-            ], 500);
-        }
+        $validated = $request->validate([
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'email' => 'required|email',
+            'phone' => 'required|string',
+            'is_activated' => 'required|boolean',
+        ]);
+    
+        // Create the customer
+        $customer = Customer::create($validated);
+    
+        return response()->json($customer, 201);
     }
+    
 
     public function show(string $id)
     {
@@ -155,9 +154,9 @@ class CustomerController extends Controller
             $validated = $request->validate([
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:customers,email',
+                'email' => 'required|string|email|max:255|unique:customers,email,' . $id, // Exclude current customer's email
                 'phone' => 'required|string',
-                // 'phone' => 'required|string|regex:/^\+?[0-9]{10,15}$/',
+                'created_at' => 'required|string',
             ]);
 
             $customer = Customer::findOrFail($id);

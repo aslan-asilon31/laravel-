@@ -1,4 +1,14 @@
 <div>
+        <div wire:loading>
+            <div class="loading-indicator">
+                <!-- Anda bisa menggunakan spinner atau teks loading -->
+                <p>Loading...</p>
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+	    </div>
+
     <footer class="bg-white bg-white dark:bg-gray-900 border-t border-gray-500 dark:border-gray-700 mt-16">
         <div class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8 ">
             <div class="md:flex md:justify-between">

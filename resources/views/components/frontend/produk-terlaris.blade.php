@@ -1,6 +1,15 @@
 <div>
 
-    <div x-data="{ isLoading: false }">
+        <div wire:loading>
+            <div class="loading-indicator">
+                <!-- Anda bisa menggunakan spinner atau teks loading -->
+                <p>Loading...</p>
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+	    </div>
+
         <div class="container  mx-auto px-4  bg-gradient-to-r from-cyan-500 to-blue-500 m-8 p-4 rounded-lg border shadow-lg" >
             <h2 class="text-sm md:text-xl text-outline font-bold mb-4 text-white underline">Produk Terlaris</h2>
 
@@ -61,6 +70,6 @@
                 @endforelse
             </div>
         </div>
-    </div>
+
 
 </div>

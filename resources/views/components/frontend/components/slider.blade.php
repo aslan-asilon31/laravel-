@@ -30,6 +30,15 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
+        <div wire:loading>
+            <div class="loading-indicator">
+                <!-- Anda bisa menggunakan spinner atau teks loading -->
+                <p>Loading...</p>
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+	    </div>
 
     <nav class="bg-blue-900" style="z-index: 1 !important;">
         <div class="swiper mySwiper">

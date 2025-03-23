@@ -26,6 +26,9 @@ Route::get('/cart-checkout', \App\Livewire\Pages\Visitor\CartCheckoutResources\C
 Route::get('/cart-invoice', \App\Livewire\Pages\Visitor\CartInvoiceResources\CartInvoiceList::class)->name('cart-invoice');
 Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice');
 
+Route::get('/customer-care', \App\Livewire\Pages\Visitor\CustomerCareResources\CustomerCareList::class)->name('customer-care');
+Route::get('/galeri', \App\Livewire\Pages\Visitor\GaleriResources\GaleriList::class)->name('galeri');
+Route::get('/blog', \App\Livewire\Pages\Visitor\BlogResources\BlogList::class)->name('blog');
 
 
 Route::get('/send-email', [SendEmailController::class, 'index'])->name('kirim-email');

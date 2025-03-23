@@ -5,7 +5,7 @@
             width: 100%;
             height: 100%;
             }
-        
+
             .swiper-slide-brand {
             text-align: center;
             font-size: 18px;
@@ -14,69 +14,95 @@
             justify-content: center;
             align-items: center;
             }
-        
+
             .swiper-slide-brand img {
             display: block;
             width: 100%;
             height: 100%;
             object-fit: cover;
             }
-        
+
             .swiper-slide-brand {
             width: 80%;
             }
-        
+
             .swiper-slide-brand:nth-child(2n) {
             width: 60%;
             }
-        
+
             .swiper-slide-brand:nth-child(3n) {
             width: 40%;
             }
         </style>
 
-        {{-- <div wire:loading>Loading...</div> --}}
-
-        @if($isLoading)
-            <div class="loading-indicator">
-                <!-- Anda bisa menggunakan spinner atau teks loading -->
-                <p>Loading...</p>
-                <div class="spinner-border" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-        @else
-
-            <x-frontend.components.slider />
 
 
-            {{-- Banner  --}}
-            <div class="container mx-auto px-4 mt-10   m-8 p-4 rounded-lg border shadow-lg text-center justify-center ">
-                <img src="{{ asset('backend-assets/banner4.png') }}" class="w-full" alt="Brand 1">
+
+            <div >
+                <x-frontend.components.slider />
             </div>
 
-            <!-- Kategori Produk -->
-            <x-frontend.kategori-produk :categories="$categories" lazy="on-load"/>
+            <div  >
 
-            <!-- Brand -->
-            <x-frontend.brand :brands="$brands" lazy="on-load"/>
+                @if($isLoading)
+                    <div class="loading-indicator">
+                        <!-- Anda bisa menggunakan spinner atau teks loading -->
+                        <p>Loading...</p>
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                @else
+                    <div class="container mx-auto px-4 mt-10   m-8 p-4 rounded-lg border shadow-lg text-center justify-center " >
+                        <img src="{{ asset('backend-assets/banner4.png') }}" class="w-full" alt="Brand 1">
+                    </div>
+                @endif
 
-            <!-- Produk Terlaris -->
-            <x-frontend.produk-terlaris :products5="$products5" lazy="on-load"/>
-
-            <!-- Rekomendasi untuk Kamu -->
-            <x-frontend.rekomendasi-produk :productrecoms="$productrecoms" lazy="on-load"/>
+            </div>
 
 
-            <!-- marketplace -->
-            <x-frontend.marketplace :marketplaces="$marketplaces" lazy="on-load"/>
+            <div id="categories">
+                <!-- Kategori Produk -->
+                <x-frontend.kategori-produk :categories="$categories" wire:transition/>
+            </div>
+
+            <div>
+                <!-- Brand -->
+                <x-frontend.brand :brands="$brands" wire:transition/>
+            </div>
+
+            <div>
+                <!-- Produk Terlaris -->
+                <x-frontend.produk-terlaris :products5="$products5" wire:show="!starred" wire:cloak/>
+            </div>
+
+
+            <div>
+                <!-- Rekomendasi untuk Kamu -->
+                <x-frontend.rekomendasi-produk :productrecoms="$productrecoms" wire:transition />
+            </div>
+
+
+
+            <div>
+                <!-- marketplace -->
+                <x-frontend.marketplace :marketplaces="$marketplaces" wire:transition/>
+            </div>
 
 
             <br><br><br>
 
-        @endif
 
-        
+
+    @script
+        <script>
+            document.addEventListener('livewire:load', function () {
+
+            });
+        </script>
+    @endscript
+
+
 
 
     <script>
@@ -130,21 +156,24 @@
                     },
                 },
             });
-            
+
 
     document.addEventListener('livewire:init', () => {
-        
+
         Livewire.on(('productWasDeleted') => {
             alert('produt was deleted')
         })
-        
+
         Livewire.on(('productWasAdded') => {
             alert('produt was added')
         })
 
     })
- 
+
     </script>
+
+
+
 
 
 
@@ -152,4 +181,3 @@
 
 
 
-  

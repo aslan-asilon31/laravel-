@@ -53,31 +53,31 @@ class CustomerController extends Controller
         $page = $request->input('page', 1); // Default to page 1 if not provided
         $sort = $request->input('sort', 'newest'); // Default sort option
         $desc = $request->input('desc', false); // Default to ascending order
-    
+
         // Build the query
         $query = Customer::query();
-    
+
         // Apply filters
         if ($filter) {
             $query->where('first_name', 'LIKE', '%' . $filter . '%');
         }
-    
+
         if ($createdBy) {
             $query->where('created_by', $createdBy);
         }
-    
+
         // Apply sorting
         if ($sort === 'newest') {
             $query->orderBy('created_at','desc');
         } else{
             $query->orderBy('created_at','asc');
         }
-    
+
         // Paginate the results
         $perPage = 9; // Set the number of items per page
         $brands = $query->paginate($perPage, ['*'], 'page', $page);
 
-       
+
         // Return the paginated results
         return response()->json([
             'success' => true,
@@ -86,7 +86,7 @@ class CustomerController extends Controller
         ], Response::HTTP_OK);
 
     }
-    
+
     public function fetch_by_id(string $id)
     {
         $brand = Customer::where('id',$id)->first();
@@ -98,7 +98,7 @@ class CustomerController extends Controller
         ], Response::HTTP_OK);
 
     }
-    
+
     public function edit(string $id)
     {
 
@@ -119,15 +119,15 @@ class CustomerController extends Controller
             'last_name' => 'required|string',
             'email' => 'required|email',
             'phone' => 'required|string',
-            'is_activated' => 'required|boolean',
+            'is_activated' => 'required',
         ]);
-    
+
         // Create the customer
         $customer = Customer::create($validated);
-    
+
         return response()->json($customer, 201);
     }
-    
+
 
     public function show(string $id)
     {
@@ -167,7 +167,7 @@ class CustomerController extends Controller
                 "message" => "Product Brand updated successfully",
                 "data" => $customer
             ]);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -189,7 +189,7 @@ class CustomerController extends Controller
             return response()->json([
                 "message" => "Product deleted successfully"
             ]);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
